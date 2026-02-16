@@ -1,0 +1,5 @@
+discord.py
+fastapi
+motor
+uvicorn
+pydantic
