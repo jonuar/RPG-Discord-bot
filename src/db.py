@@ -10,28 +10,34 @@ class Database:
     async def close(self):
         self.client.close()
 
-    async def create_document(self, collection_name: str, document: dict):
-        collection = self.db[collection_name]
-        result = await collection.insert_one(document)
+    async def create_user(self, user_id: int, race: str = None, user_class: str = None):
+        collection = self.db["users"]
+        user_doc = {
+            "user_id": user_id,
+            "race": race,
+            "class": user_class,
+            "coins": 0,
+            "inventory": []
+        }
+        result = await collection.insert_one(user_doc)
         return result.inserted_id
 
-    async def read_document(self, collection_name: str, query: dict):
-        collection = self.db[collection_name]
-        document = await collection.find_one(query)
-        return document
+    async def read_user(self, user_id: int):
+        collection = self.db["users"]
+        return await collection.find_one({"user_id": user_id})
 
-    async def update_document(self, collection_name: str, query: dict, update: dict):
-        collection = self.db[collection_name]
+    async def update_user(self, user_id: int, update: dict):
+        collection = self.db["users"]
         updated_document = await collection.find_one_and_update(
-            query,
+            {"user_id": user_id},
             {'$set': update},
             return_document=ReturnDocument.AFTER
         )
         return updated_document
 
-    async def delete_document(self, collection_name: str, query: dict):
-        collection = self.db[collection_name]
-        result = await collection.delete_one(query)
+    async def delete_user(self, user_id: int):
+        collection = self.db["users"]
+        result = await collection.delete_one({"user_id": user_id})
         return result.deleted_count
 
 def get_database():
