@@ -26,6 +26,18 @@ mongo_client = AsyncIOMotorClient(MONGODB_URI)
 db = mongo_client["rpgbot"]
 users_collection = db["users"]
 
+@bot.command(name="info")
+async def mostrar_ayuda(ctx):
+    help_text = (
+        "**Comandos disponibles:**\n"
+        "`!razas` - Muestra la lista de razas disponibles.\n"
+        "`!clases` - Muestra la lista de clases disponibles.\n"
+        "`!elegir <número><letra>` - Elige raza y clase. Ejemplo: `!elegir 1A`\n"
+        "`!perfil` - Muestra tu perfil actual.\n"
+        "`!info` - Muestra este mensaje de ayuda."
+    )
+    await ctx.send(help_text)
+
 @bot.command(name="razas")
 async def listar_razas(ctx):
     razas_text = "\n".join([f"{i+1}. {raza}" for i, raza in enumerate(RACES)])
