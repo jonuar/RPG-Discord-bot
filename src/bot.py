@@ -78,31 +78,39 @@ async def elegir(ctx, opcion: str):
         await database.update_user(ctx.author.id, {"race": raza, "class": clase})
     await ctx.send(f"{ctx.author.mention}, has elegido:\nRaza: **{raza}**\nClase: **{clase}**.")
 
-@bot.command(name="elegir_raza")
-async def elegir_raza(ctx, *, raza):
+@bot.command(name="cambiar_raza")
+async def cambiar_raza(ctx, *, raza):
     raza = raza.capitalize()
     if raza not in RACES:
         await ctx.send("Raza no válida. Usa `!razas` para ver las opciones.")
         return
     user = await database.read_user(ctx.author.id)
-    if not user:
-        await database.create_user(ctx.author.id, race=raza)
-    else:
-        await database.update_user(ctx.author.id, {"race": raza})
-    await ctx.send(f"Has elegido la raza: **{raza}**.")
+    if not user or not user.get("race") or not user.get("class"):
+        await ctx.send("Primero debes elegir tu raza y clase con `!elegir`.")
+        return
+    coins = user.get("coins", 0)
+    if coins < 200:
+        await ctx.send("No tienes suficientes monedas para cambiar de raza (200 requeridas).")
+        return
+    await database.update_user(ctx.author.id, {"race": raza, "coins": coins - 200})
+    await ctx.send(f"{ctx.author.mention}, has cambiado tu raza a **{raza}**. Te quedan **§{coins - 200}** monedas.")
 
-@bot.command(name="elegir_clase")
-async def elegir_clase(ctx, *, clase):
+@bot.command(name="cambiar_clase")
+async def cambiar_clase(ctx, *, clase):
     clase = clase.capitalize()
     if clase not in CLASSES:
         await ctx.send("Clase no válida. Usa `!clases` para ver las opciones.")
         return
     user = await database.read_user(ctx.author.id)
-    if not user:
-        await database.create_user(ctx.author.id, user_class=clase)
-    else:
-        await database.update_user(ctx.author.id, {"class": clase})
-    await ctx.send(f"Has elegido la clase: **{clase}**.")
+    if not user or not user.get("race") or not user.get("class"):
+        await ctx.send("Primero debes elegir tu raza y clase con `!elegir`.")
+        return
+    coins = user.get("coins", 0)
+    if coins < 200:
+        await ctx.send("No tienes suficientes monedas para cambiar de clase (200 requeridas).")
+        return
+    await database.update_user(ctx.author.id, {"class": clase, "coins": coins - 200})
+    await ctx.send(f"{ctx.author.mention}, has cambiado tu clase a **{clase}**. Te quedan **§{coins - 200}** monedas.")
 
 @bot.command(name="perfil")
 async def mostrar_perfil(ctx):
