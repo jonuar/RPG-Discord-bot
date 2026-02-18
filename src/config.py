@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
-load_dotenv()
+
+load_dotenv(override=True)
 
 class Config:
     DISCORD_TOKEN = os.getenv("DISCORD_TOKEN")
@@ -8,3 +9,4 @@ class Config:
     DB_NAME = os.getenv("DB_NAME")
     COLLECTION_NAME = os.getenv("COLLECTION_NAME")
     PORT = int(os.getenv("PORT", 8000))
+    print(f"class Config DB_NAME: {DB_NAME}")

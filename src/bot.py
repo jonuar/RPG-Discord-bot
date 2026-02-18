@@ -1,12 +1,9 @@
 import os
 import discord
 from discord.ext import commands
-from motor.motor_asyncio import AsyncIOMotorClient
-# from dotenv import load_dotenv
 from db import get_database
 from config import Config
 
-# load_dotenv()
 
 DISCORD_TOKEN = Config.DISCORD_TOKEN
 
@@ -22,10 +19,7 @@ CLASSES = [
     "Guerrero", "Mago", "Druida", "Ladrón", "Paladín", "Bárbaro", "Clérigo", "Hechicero", "Monje", "Explorador"
 ]
 
-# Conexión a MongoDB
-mongo_client = AsyncIOMotorClient(Config.MONGO_URI)
-db = mongo_client[Config.DB_NAME]
-users_collection = db[Config.COLLECTION_NAME]
+# Conexión a db
 database = get_database()
 
 @bot.command(name="info")
@@ -77,11 +71,12 @@ async def elegir(ctx, opcion: str):
     raza = RACES[raza_idx]
 
     user = await database.read_user(ctx.author.id)
+    username = ctx.author.name
     if not user:
-        await database.create_user(ctx.author.id, race=raza, user_class=clase)
+        await database.create_user(ctx.author.id, username=username, race=raza, user_class=clase)
     else:
         await database.update_user(ctx.author.id, {"race": raza, "class": clase})
-    await ctx.send(f"Has elegido:\nRaza: **{raza}**\nClase: **{clase}**.")
+    await ctx.send(f"{ctx.author.mention}, has elegido:\nRaza: **{raza}**\nClase: **{clase}**.")
 
 @bot.command(name="elegir_raza")
 async def elegir_raza(ctx, *, raza):
@@ -123,7 +118,7 @@ async def mostrar_perfil(ctx):
         f"Perfil de {ctx.author.mention}:\n"
         f"Raza: **{raza}**\n"
         f"Clase: **{clase}**\n"
-        f"Monedas: **{coins}**\n"
+        f"Monedas: **§{coins}**\n"
         f"Inventario: {', '.join(inventory) if inventory else 'Vacío'}"
     )
 
