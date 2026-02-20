@@ -8,14 +8,7 @@ import random
 
 '''
 TODO
-
-
-- Hacer tests
-
--Desplegar bot en render o AWS
-
 -Implementar compras de inventario.
-
 '''
 
 
