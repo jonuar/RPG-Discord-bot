@@ -10,9 +10,6 @@ import random
 TODO
 -Si el personaje llega 0 monedas muere y debe crear su personaje de nuevo
 
--Duelo entre personajes tiran un dado y el valor random indicará si viven o mueren,
-el que es derrota pierde 100 monedas
-
 -Si la persona con la que se le hace duelo no ha credo su personaje, es mencionado
 para que lo haga con instrucciones
 
@@ -132,11 +129,19 @@ async def cambiar_raza(ctx, *, raza):
     if coins < 200:
         await ctx.send("Tus bolsillos están tan vacíos como tu esperanza. Necesitas 200 monedas para cambiar de raza.")
         return
-    await database.update_user(ctx.author.id, {"race": raza, "coins": coins - 200})
-    await ctx.send(
-        f"{ctx.author.mention}, tras un oscuro ritual, ahora eres **{raza}**. "
-        f"Te quedan **§{coins - 200}** monedas y una nueva identidad que pronto lamentarás."
-    )
+    new_coins = coins - 200
+    if new_coins <= 0:
+        await database.delete_user(ctx.author.id)
+        await ctx.send(
+            f"{ctx.author.mention}, el ritual para cambiar de raza ha drenado tus últimas monedas y tu alma. "
+            "Has muerto y tu existencia ha sido borrada de los anales del infortunio. Usa `!elegir` para renacer... si te atreves."
+        )
+    else:
+        await database.update_user(ctx.author.id, {"race": raza, "coins": new_coins})
+        await ctx.send(
+            f"{ctx.author.mention}, tras un oscuro ritual, ahora eres **{raza}**. "
+            f"Te quedan **§{new_coins}** monedas y una nueva identidad que pronto lamentarás."
+        )
 
 @bot.command(name="cambiar_clase")
 async def cambiar_clase(ctx, *, clase):
@@ -152,11 +157,19 @@ async def cambiar_clase(ctx, *, clase):
     if coins < 200:
         await ctx.send("No tienes suficientes monedas. Quizás vender tu alma sea más rentable.")
         return
-    await database.update_user(ctx.author.id, {"class": clase, "coins": coins - 200})
-    await ctx.send(
-        f"{ctx.author.mention}, tras un entrenamiento mortal (literalmente), ahora eres **{clase}**. "
-        f"Te quedan **§{coins - 200}** monedas y una nueva profesión que probablemente te mate más rápido."
-    )
+    new_coins = coins - 200
+    if new_coins <= 0:
+        await database.delete_user(ctx.author.id)
+        await ctx.send(
+            f"{ctx.author.mention}, tu intento de cambiar de clase ha vaciado tus arcas y tu existencia. "
+            "Has muerto y deberás crear un nuevo perfil con `!elegir`. La próxima vez, elige con más sabiduría... o no."
+        )
+    else:
+        await database.update_user(ctx.author.id, {"class": clase, "coins": new_coins})
+        await ctx.send(
+            f"{ctx.author.mention}, tras un entrenamiento mortal (literalmente), ahora eres **{clase}**. "
+            f"Te quedan **§{new_coins}** monedas y una nueva profesión que probablemente te mate más rápido."
+        )
 
 @bot.command(name="perfil")
 async def mostrar_perfil(ctx):
@@ -212,17 +225,33 @@ async def duelo(ctx, oponente: discord.Member):
     if dado_jugador > dado_rival:
         await database.update_user(ctx.author.id, {"coins": jugador["coins"] + 100})
         await database.update_user(oponente.id, {"coins": rival["coins"] - 100})
-        resultado += (
-            f"¡{ctx.author.mention} aplasta a su rival y saquea 100 monedas de su bolsa! "
-            f"{oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido."
-        )
+        # Verifica si el oponente murió
+        if rival["coins"] - 100 <= 0:
+            await database.delete_user(oponente.id)
+            resultado += (
+                f"\n{oponente.mention} ha perdido todas sus monedas y su alma ha sido reclamada. "
+                "Deberá forjar un nuevo destino con `!elegir`."
+            )
+        else:
+            resultado += (
+                f"¡{ctx.author.mention} aplasta a su rival y saquea 100 monedas de su bolsa! "
+                f"{oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido."
+            )
     elif dado_rival > dado_jugador:
         await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
         await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
-        resultado += (
-            f"¡{oponente.mention} se alza victorioso y roba 100 monedas! "
-            f"{ctx.author.mention}, quizás la suerte te sonría en tu próxima vida... o no."
-        )
+        # Verifica si el jugador murió
+        if jugador["coins"] - 100 <= 0:
+            await database.delete_user(ctx.author.id)
+            resultado += (
+                f"\n{ctx.author.mention} ha perdido todas sus monedas y ha sido borrado de la historia. "
+                "Deberá crear un nuevo perfil con `!elegir`."
+            )
+        else:
+            resultado += (
+                f"¡{oponente.mention} se alza victorioso y roba 100 monedas! "
+                f"{ctx.author.mention}, quizás la suerte te sonría en tu próxima vida... o no."
+            )
     else:
         resultado += (
             "¡Empate! Los dioses del azar se burlan de ambos y nadie gana ni pierde monedas. "
