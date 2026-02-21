@@ -42,6 +42,7 @@ async def mostrar_ayuda(ctx):
         "`!cambiar_clase <clase>` - Cambia tu clase después de crear tu perfil. Cuesta 200 monedas. Si llegas a 0 monedas, tu personaje muere y debes crear uno nuevo.\n"
         "`!duelo @usuario` - Reta a otro jugador a un duelo de dados. Ambos deben tener perfil y al menos 100 monedas. El ganador recibe 100 monedas del perdedor. Si un jugador queda en 0 monedas, muere y debe crear un nuevo perfil.\n"
         "`!info` - Muestra este mensaje de ayuda.\n\n"
+        
         "Reglas especiales:\n"
         "- Si tu personaje llega a 0 monedas, muere y debes crear uno nuevo con `!elegir`.\n"
         "- Si retas a duelo a alguien sin perfil, será mencionado y recibirá instrucciones para crearlo.\n"
@@ -108,10 +109,9 @@ async def elegir(ctx, opcion: str):
         )
 
 @bot.command(name="cambiar_raza")
-async def cambiar_raza(ctx, *, raza):
-    raza = raza.capitalize()
-    if raza not in RACES:
-        await ctx.send("Esa raza solo existe en tus sueños febriles. Usa `!razas` para ver las opciones reales.")
+async def cambiar_raza(ctx, numero: int):
+    if numero < 1 or numero > len(RACES):
+        await ctx.send("Ese número de raza no existe en este plano. Usa `!razas` para ver las opciones.")
         return
     user = await database.read_user(ctx.author.id)
     if not user or not user.get("race") or not user.get("class"):
@@ -122,6 +122,7 @@ async def cambiar_raza(ctx, *, raza):
         await ctx.send("Tus bolsillos están tan vacíos como tu esperanza. Necesitas 200 monedas para cambiar de raza.")
         return
     new_coins = coins - 200
+    raza = RACES[numero - 1]
     if new_coins <= 0:
         await database.delete_user(ctx.author.id)
         await ctx.send(
@@ -136,10 +137,11 @@ async def cambiar_raza(ctx, *, raza):
         )
 
 @bot.command(name="cambiar_clase")
-async def cambiar_clase(ctx, *, clase):
-    clase = clase.capitalize()
-    if clase not in CLASSES:
-        await ctx.send("Esa clase solo existe en las pesadillas de los bardos. Usa `!clases` para ver las opciones.")
+async def cambiar_clase(ctx, letra: str):
+    letras = "ABCDEFGHIJ"
+    letra = letra.upper()
+    if letra not in letras:
+        await ctx.send("Esa letra de clase solo existe en las pesadillas de los bardos. Usa `!clases` para ver las opciones.")
         return
     user = await database.read_user(ctx.author.id)
     if not user or not user.get("race") or not user.get("class"):
@@ -150,6 +152,7 @@ async def cambiar_clase(ctx, *, clase):
         await ctx.send("No tienes suficientes monedas. Quizás vender tu alma sea más rentable.")
         return
     new_coins = coins - 200
+    clase = CLASSES[letras.index(letra)]
     if new_coins <= 0:
         await database.delete_user(ctx.author.id)
         await ctx.send(
