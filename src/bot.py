@@ -4,6 +4,7 @@ from discord.ext import commands
 from db import get_database
 from config import Config
 import random
+from dialogs import obtener_dialogo
 
 
 '''
@@ -125,16 +126,18 @@ async def cambiar_raza(ctx, numero: int):
     raza = RACES[numero - 1]
     if new_coins <= 0:
         await database.delete_user(ctx.author.id)
-        await ctx.send(
-            f"{ctx.author.mention}, el ritual para cambiar de raza ha drenado tus últimas monedas y tu alma. "
-            "Has muerto y tu existencia ha sido borrada de los anales del infortunio. Usa `!elegir` para renacer... si te atreves."
-        )
+        await ctx.send(obtener_dialogo(
+            "cambiar_raza_muerte",
+            user=ctx.author.mention
+        ))
     else:
         await database.update_user(ctx.author.id, {"race": raza, "coins": new_coins})
-        await ctx.send(
-            f"{ctx.author.mention}, tras un oscuro ritual, ahora eres **{raza}**. "
-            f"Te quedan **§{new_coins}** monedas y una nueva identidad que pronto lamentarás."
-        )
+        await ctx.send(obtener_dialogo(
+            "cambiar_raza_exito",
+            user=ctx.author.mention,
+            raza=raza,
+            coins=new_coins
+        ))
 
 @bot.command(name="cambiar_clase")
 async def cambiar_clase(ctx, letra: str):
@@ -155,16 +158,18 @@ async def cambiar_clase(ctx, letra: str):
     clase = CLASSES[letras.index(letra)]
     if new_coins <= 0:
         await database.delete_user(ctx.author.id)
-        await ctx.send(
-            f"{ctx.author.mention}, tu intento de cambiar de clase ha vaciado tus arcas y tu existencia. "
-            "Has muerto y deberás crear un nuevo perfil con `!elegir`. La próxima vez, elige con más sabiduría... o no."
-        )
+        await ctx.send(obtener_dialogo(
+            "cambiar_clase_muerte",
+            user=ctx.author.mention
+        ))
     else:
         await database.update_user(ctx.author.id, {"class": clase, "coins": new_coins})
-        await ctx.send(
-            f"{ctx.author.mention}, tras un entrenamiento mortal (literalmente), ahora eres **{clase}**. "
-            f"Te quedan **§{new_coins}** monedas y una nueva profesión que probablemente te mate más rápido."
-        )
+        await ctx.send(obtener_dialogo(
+            "cambiar_clase_exito",
+            user=ctx.author.mention,
+            clase=clase,
+            coins=new_coins
+        ))
 
 @bot.command(name="perfil")
 async def mostrar_perfil(ctx):
