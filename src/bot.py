@@ -42,7 +42,7 @@ async def mostrar_ayuda(ctx):
         "`!cambiar_clase <clase>` - Cambia tu clase después de crear tu perfil. Cuesta 200 monedas. Si llegas a 0 monedas, tu personaje muere y debes crear uno nuevo.\n"
         "`!duelo @usuario` - Reta a otro jugador a un duelo de dados. Ambos deben tener perfil y al menos 100 monedas. El ganador recibe 100 monedas del perdedor. Si un jugador queda en 0 monedas, muere y debe crear un nuevo perfil.\n"
         "`!info` - Muestra este mensaje de ayuda.\n\n"
-        
+
         "Reglas especiales:\n"
         "- Si tu personaje llega a 0 monedas, muere y debes crear uno nuevo con `!elegir`.\n"
         "- Si retas a duelo a alguien sin perfil, será mencionado y recibirá instrucciones para crearlo.\n"
@@ -54,7 +54,7 @@ async def listar_razas(ctx):
     razas_text = "\n".join([f"{i+1}. {raza}" for i, raza in enumerate(RACES)])
     await ctx.send(
         f"En el gran libro de los condenados, las razas disponibles son:\n{razas_text}\n"
-        "Elige sabiamente... o no, igual el destino te alcanzará."
+        "\nElige sabiamente... o no, igual el destino te alcanzará."
     )
 
 @bot.command(name="clases")
@@ -63,7 +63,7 @@ async def listar_clases(ctx):
     clases_text = "\n".join([f"{letras[i]}. {clase}" for i, clase in enumerate(CLASSES)])
     await ctx.send(
         f"Las sendas del infortunio te ofrecen estas clases:\n{clases_text}\n"
-        "Recuerda: ningún mago ha muerto de viejo, y ningún bárbaro ha muerto de sabio."
+        "\nRecuerda: ningún mago ha muerto de viejo, y ningún bárbaro ha muerto de sabio."
     )
 
 @bot.command(name="elegir")
