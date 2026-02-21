@@ -120,7 +120,7 @@ async def cambiar_raza(ctx, numero: int):
         return
     raza = RACES[numero - 1]
     if user.get("race") == raza:
-        await ctx.send("Ya eres esa raza. El destino no permite cambios redundantes.")
+        await ctx.send(obtener_dialogo("cambiar_raza_misma", user=ctx.author.mention))
         return
     coins = user.get("coins", 0)
     if coins < 200:
@@ -147,7 +147,7 @@ async def cambiar_clase(ctx, letra: str):
         return
     clase = CLASSES[letras.index(letra)]
     if user.get("class") == clase:
-        await ctx.send("Ya tienes esa clase. El destino no permite cambios redundantes.")
+        await ctx.send(obtener_dialogo("cambiar_clase_misma", user=ctx.author.mention))
         return
     coins = user.get("coins", 0)
     if coins < 200:

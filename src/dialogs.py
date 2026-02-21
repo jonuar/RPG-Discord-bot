@@ -76,7 +76,11 @@ DIALOGOS = {
         "¿Clase secreta? No existe. Usa !clases.",
         "Intentas elegir una clase prohibida. Usa !clases."
     ],
-    # Agrega más categorías según tus comandos y situaciones
+    "cambiar_raza_misma": [
+        "{user}, ¿crees que cambiar a la misma raza te hará más interesante? Los dioses bostezan ante tu falta de imaginación.",
+        "{user}, intentas cambiar a la raza que ya tienes. El universo se ríe de tu redundancia.",
+        "{user}, cambiar a la misma raza es como pedirle a la muerte una segunda oportunidad... y que te la niegue."
+    ],
 }
 
 def obtener_dialogo(clave, **kwargs):
