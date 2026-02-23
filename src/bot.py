@@ -223,7 +223,7 @@ async def duelo(ctx, oponente: discord.Member):
 
     # Aplica el objeto especial (si existe) y recibe el efecto y mensaje
     efecto, mensaje_objeto = await aplicar_objeto_duelo(
-        ctx, jugador, rival, dado_jugador, dado_rival
+        ctx, jugador, rival, dado_jugador, dado_rival, oponente
     )
 
     # Construye el resultado base
@@ -248,9 +248,6 @@ async def duelo(ctx, oponente: discord.Member):
             saldo_final = saldo_previo + ganancia
             await database.update_user(ctx.author.id, {"coins": saldo_final})
             await database.update_user(oponente.id, {"coins": rival["coins"] - ganancia})
-        # El oponente pierde monedas normalmente
-        await database.update_user(oponente.id, {"coins": rival["coins"] - ganancia})
-
         # Construye y envía el mensaje de resultado (incluyendo mensaje_objeto si aplica)
         resultado += (
             f"¡{ctx.author.mention} aplasta a su rival y saquea §{ganancia} monedas de su bolsa! {oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido."
@@ -327,7 +324,7 @@ async def comprar_objeto(ctx, numero: int):
     await ctx.send(obtener_dialogo("compra_exito", objeto=objeto["nombre"]))
 
 # Uso de objetos en duelo
-async def aplicar_objeto_duelo(ctx, user, oponente, dado_user, dado_oponente):
+async def aplicar_objeto_duelo(ctx, user, oponente_db, dado_user, dado_oponente, oponente_member):
     inventario = user.get("inventory", [])
     efecto = None
     mensaje = ""
@@ -349,7 +346,7 @@ async def aplicar_objeto_duelo(ctx, user, oponente, dado_user, dado_oponente):
         inventario.remove(objeto_usado)
         await database.update_user(ctx.author.id, {"inventory": inventario})
         efecto = "hongo_abismo"
-        mensaje = obtener_dialogo("duelo_objeto_hongo_abismo", user=ctx.author.mention, enemigo=oponente.mention)
+        mensaje = obtener_dialogo("duelo_objeto_hongo_abismo", user=ctx.author.mention, enemigo=oponente_member.mention)
     # Pizza con yogur: solo se elimina si gana
     elif objeto_usado == "Pizza con yogur 🍕" and dado_user > dado_oponente:
         inventario.remove(objeto_usado)
