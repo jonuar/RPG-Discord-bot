@@ -96,17 +96,17 @@ DIALOGOS = {
     ],
     "tienda_intro": [
         "Una figura sombría, cubierta de alhajas tintineantes, emerge de las sombras.\n\"Bienvenido, viajero... Soy **El Mercader**. ¿Buscas poder, suerte o simplemente tentar a la muerte? Esto es lo que tengo para ti:\"",
-        "Entre las penumbras, **El mercader** te observa con ojos brillantes tras una máscara de joyas.\n\"¿Interesado en mis exóticos productos? El precio es justo... o eso dicen los espíritus.\"",
-        "Un susurro metálico te rodea mientras **El mercader** despliega su manto repleto de baratijas.\n\"Elige con cuidado, forastero. Cada objeto tiene su precio... y su consecuencia.\""
+        "Entre las penumbras, **El Mercader** te observa con ojos brillantes tras una máscara de joyas.\n\"¿Interesado en mis exóticos productos? El precio es justo... o eso dicen los espíritus.\"",
+        "Un susurro metálico te rodea mientras **El Mercader** despliega su manto repleto de baratijas.\n\"Elige con cuidado, forastero. Cada objeto tiene su precio... y su consecuencia.\""
     ],
     "compra_exito": [
-        "\"Excelente elección...\", murmura **El mercader** mientras te entrega el {objeto}.\n\"Que el destino te sea propicio... o al menos entretenido.\"",
-        "**El mercader** sonríe con dientes dorados.\n\"{objeto} es tuyo. Recuerda: toda bendición es una maldición disfrazada.\"",
-        "Con un gesto ágil, **El mercader** te pasa el {objeto}.\n\"No acepto devoluciones, ni almas rotas.\""
+        "\"Excelente elección...\", murmura **El Mercader** mientras te entrega el {objeto}.\n\"Que el destino te sea propicio... o al menos entretenido.\"",
+        "**El Mercader** sonríe con dientes dorados.\n\"{objeto} es tuyo. Recuerda: toda bendición es una maldición disfrazada.\"",
+        "Con un gesto ágil, **El Mercader** te pasa el {objeto}.\n\"No acepto devoluciones, ni almas rotas.\""
     ],
     "compra_fallo": [
         "\"No tienes suficiente oro para mis tesoros, pobre alma...\", se burla **El Mercader**.",
-        "**El mercader** sacude la cabeza.\n\"Vuelve cuando tu bolsa pese más que tus sueños rotos.\"",
+        "**El Mercader** sacude la cabeza.\n\"Vuelve cuando tu bolsa pese más que tus sueños rotos.\"",
         "\"El oro abre puertas, la pobreza las cierra.\nVuelve cuando puedas pagar.\""
     ],
     "duelo_objeto_elixir_bruma": [
