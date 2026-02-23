@@ -166,10 +166,17 @@ async def cambiar_clase(ctx, letra: str):
         await ctx.send(obtener_dialogo("cambiar_clase_exito", user=ctx.author.mention, clase=clase, coins=new_coins))
 
 @bot.command(name="perfil")
-async def mostrar_perfil(ctx):
+async def perfil(ctx):
     user = await database.read_user(ctx.author.id)
     if not user:
         await ctx.send(obtener_dialogo("perfil_vacio"))
+        return
+    if user.get("coins", 0) <= 0:
+        await database.delete_user(ctx.author.id)
+        await ctx.send(
+            f"{ctx.author.mention}, tu alma ha sido reclamada por la pobreza. "
+            "Tu perfil ha sido eliminado. Usa `!elegir` para renacer."
+        )
         return
     raza = user.get("race", "No elegida")
     clase = user.get("class", "No elegida")
@@ -271,18 +278,21 @@ async def duelo(ctx, oponente: discord.Member):
             # Lógica normal
             await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
-        # ¿Jugador muerto?
-        if jugador["coins"] - 100 <= 0:
-            await database.delete_user(ctx.author.id)
-            resultado += (
-                f"\n{ctx.author.mention} ha perdido todas sus monedas y ha sido borrado de la historia. "
-                "Deberá crear un nuevo perfil con `!elegir`."
-            )
-        else:
-            resultado += (
-                f"¡{oponente.mention} se alza victorioso y roba §100 monedas! "
-                f"{ctx.author.mention}, quizás la suerte te sonría en tu próxima vida... o no."
-            )
+            nuevo_saldo = jugador["coins"] - 100
+            await database.update_user(ctx.author.id, {"coins": nuevo_saldo})
+            await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
+            if nuevo_saldo <= 0:
+                await database.delete_user(ctx.author.id)
+                resultado += (
+                    f"\n{ctx.author.mention} ha perdido todas sus monedas y ha sido borrado de la historia. "
+                    "Deberá crear un nuevo perfil con `!elegir`."
+                )
+            else:
+                resultado += (
+                    f"¡{oponente.mention} se alza victorioso y roba §100 monedas! "
+                    f"{ctx.author.mention}, quizás la suerte te sonría en tu próxima vida... o no."
+                )
+            await ctx.send(resultado)
     else:
         # Empate
         resultado += (
