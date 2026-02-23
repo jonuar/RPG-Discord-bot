@@ -39,8 +39,8 @@ async def mostrar_ayuda(ctx):
         "`!clases` - Muestra la lista de clases disponibles.\n"
         "`!elegir <número><letra>` - Elige tu raza y clase. Ejemplo: `!elegir 1A`\n"
         "`!perfil` - Muestra tu perfil actual.\n"
-        "`!cambiar_raza <raza>` - Cambia tu raza después de crear tu perfil. Cuesta 200 monedas. Si llegas a 0 monedas, tu personaje muere y debes crear uno nuevo.\n"
-        "`!cambiar_clase <clase>` - Cambia tu clase después de crear tu perfil. Cuesta 200 monedas. Si llegas a 0 monedas, tu personaje muere y debes crear uno nuevo.\n"
+        "`!cambiar_raza <número>` - Cambia tu raza después de crear tu perfil. Cuesta 200 monedas. Si llegas a 0 monedas, tu personaje muere y debes crear uno nuevo.\n"
+        "`!cambiar_clase <letra>` - Cambia tu clase después de crear tu perfil. Cuesta 200 monedas. Si llegas a 0 monedas, tu personaje muere y debes crear uno nuevo.\n"
         "`!duelo @usuario` - Reta a otro jugador a un duelo de dados. Ambos deben tener perfil y al menos 100 monedas. El ganador recibe 100 monedas del perdedor. Si un jugador queda en 0 monedas, muere y debe crear un nuevo perfil.\n"
         "`!info` - Muestra este mensaje de ayuda.\n\n"
 
@@ -165,21 +165,31 @@ async def cambiar_clase(ctx, letra: str):
 async def mostrar_perfil(ctx):
     user = await database.read_user(ctx.author.id)
     if not user:
-        await ctx.send(
-            "Tu existencia es tan vacía como tu perfil. Usa `!elegir` para comenzar tu trágica aventura."
-        )
+        await ctx.send(obtener_dialogo("perfil_vacio"))
         return
     raza = user.get("race", "No elegida")
     clase = user.get("class", "No elegida")
     coins = user.get("coins", 0)
     inventory = user.get("inventory", [])
-    await ctx.send(
-        f"**Perfil de {ctx.author.mention}**\n"
-        f"Raza: **{raza}**\n"
-        f"Clase: **{clase}**\n"
-        f"Monedas: **§{coins}**\n"
-        f"Inventario: {', '.join(inventory) if inventory else 'Vacío, como tus sueños de grandeza.'}"
+    inventario_str = ', '.join(inventory) if inventory else obtener_dialogo(
+        "perfil_inventario_vacio",
+        user=ctx.author.mention,
+        raza=raza,
+        clase=clase,
+        coins=coins
     )
+
+    if inventory:
+        await ctx.send(obtener_dialogo(
+            "perfil",
+            user=ctx.author.mention,
+            raza=raza,
+            clase=clase,
+            coins=coins,
+            inventario=inventario_str
+        ))
+    else:
+        await ctx.send(inventario_str)
 
 @bot.command(name="duelo")
 async def duelo(ctx, oponente: discord.Member):

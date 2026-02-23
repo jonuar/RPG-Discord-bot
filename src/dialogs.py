@@ -52,9 +52,14 @@ DIALOGOS = {
         "Eres un alma errante sin propósito. Crea tu perfil con !elegir y abraza el sufrimiento."
     ],
     "perfil": [
-        "**Perfil de {user}**\nRaza: **{raza}**\nClase: **{clase}**\nMonedas: **§{coins}**\nInventario: {inventario}",
-        "{user}, tu miserable existencia es:\nRaza: {raza}\nClase: {clase}\nMonedas: §{coins}\nInventario: {inventario}",
-        "Los dioses se apiadan de ti, {user}:\nRaza: {raza}\nClase: {clase}\nMonedas: §{coins}\nInventario: {inventario}"
+        "Eres un {raza} y formas parte del gremio de los {clase}. En tu bolsa guardas §{coins} monedas y en tu inventario tienes: {inventario}.",
+        "{user}, tu linaje es {raza} y perteneces al gremio de los {clase}. Tus riquezas suman §{coins} monedas y tu inventario contiene: {inventario}.",
+        "Como buen {raza} del gremio de los {clase}, llevas §{coins} monedas en la bolsa y tu inventario revela: {inventario}."
+    ],
+    "perfil_inventario_vacio": [
+        "Eres un {raza} del gremio de los {clase}. En tu bolsa guardas §{coins} monedas, pero tu inventario está tan vacío como tus esperanzas.",
+        "{user}, tu linaje es {raza} y perteneces al gremio de los {clase}. Tus riquezas suman §{coins} monedas, pero tu inventario no tiene nada digno de mencionar.",
+        "Como buen {raza} del gremio de los {clase}, llevas §{coins} monedas en la bolsa y un inventario tan vacío que hasta los ladrones lo ignoran."
     ],
     "elegir_exito": [
         "{user}, los dioses se ríen mientras eliges:\nRaza: **{raza}**\nClase: **{clase}**\nTu destino está sellado... por ahora.",
