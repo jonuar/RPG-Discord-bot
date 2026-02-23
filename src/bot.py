@@ -44,9 +44,9 @@ async def mostrar_ayuda(ctx):
         "`!duelo @usuario` - Reta a otro jugador a un duelo de dados. Ambos deben tener perfil y al menos 100 monedas. El ganador recibe 100 monedas del perdedor. Si un jugador queda en 0 monedas, muere y debe crear un nuevo perfil.\n"
         "`!info` - Muestra este mensaje de ayuda.\n\n"
 
-        "Reglas especiales:\n"
-        "- Si tu personaje llega a 0 monedas, muere y debes crear uno nuevo con `!elegir`.\n"
-        "- Si retas a duelo a alguien sin perfil, será mencionado y recibirá instrucciones para crearlo.\n"
+        "Notas:\n"
+        "-> Si tu personaje llega a 0 monedas, muere y debes crear uno nuevo con `!elegir`.\n"
+        "-> Si retas a duelo a alguien sin perfil, será mencionado y recibirá instrucciones para crearlo.\n"
     )
     await ctx.send(help_text)
 
@@ -69,6 +69,10 @@ async def listar_clases(ctx):
 
 @bot.command(name="elegir")
 async def elegir(ctx, opcion: str):
+    user = await database.read_user(ctx.author.id)
+    if user:
+        await ctx.send("Ya tienes un perfil. Si quieres cambiar de raza o clase, usa `!cambiar_raza` o `!cambiar_clase`.")
+        return
     if len(opcion) < 2:
         await ctx.send("¿Intentas engañar al destino? Usa el formato correcto, mortal: `!elegir 1C`.")
         return
@@ -92,22 +96,14 @@ async def elegir(ctx, opcion: str):
     clase = CLASSES[clase_idx]
     raza = RACES[raza_idx]
 
-    user = await database.read_user(ctx.author.id)
     username = ctx.author.name
-    if not user:
-        await database.create_user(ctx.author.id, username=username, race=raza, user_class=clase)
-        await ctx.send(
-            f"{ctx.author.mention}, los dioses se ríen mientras eliges:\n"
-            f"Raza: **{raza}**\nClase: **{clase}**\n"
-            "Tu destino está sellado... por ahora."
-        )
-    else:
-        await database.update_user(ctx.author.id, {"race": raza, "class": clase})
-        await ctx.send(
-            f"{ctx.author.mention}, has cambiado tu senda a:\n"
-            f"Raza: **{raza}**\nClase: **{clase}**\n"
-            "¿Crees que así evitarás la tragedia? Ingenuo."
-        )
+    await database.create_user(ctx.author.id, username=username, race=raza, user_class=clase)
+    await ctx.send(
+        f"{ctx.author.mention}, los dioses te vigilan mientras eliges:\n"
+        f"Raza: **{raza}**\nClase: **{clase}**\n"
+        f"Se te otorga un tributo celestial por **§1000** monedas"
+        "Tu destino está sellado... por ahora."
+    )
 
 @bot.command(name="cambiar_raza")
 async def cambiar_raza(ctx, numero: int):
@@ -240,7 +236,7 @@ async def duelo(ctx, oponente: discord.Member):
     elif dado_rival > dado_jugador:
         await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
         await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
-        # Verifica si el jugador murió
+        # ¿Jugador muerto?
         if jugador["coins"] - 100 <= 0:
             await database.delete_user(ctx.author.id)
             resultado += (

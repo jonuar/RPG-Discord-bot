@@ -19,7 +19,8 @@ DIALOGOS = {
     "cambiar_clase_exito": [
         "{user}, tras un entrenamiento mortal, ahora eres {clase}.\nTe quedan **§{coins}** monedas y una nueva profesión que probablemente te mate más rápido.",
         "{user}, cambias de clase como quien cambia de tumba.\nAhora eres {clase} y te quedan **§{coins}** monedas.",
-        "{user}, tu destino da un giro oscuro: eres {clase}.\n¿Sobrevivirás esta vez?"
+        "{user}, tu destino da un giro oscuro: eres {clase}.\n¿Sobrevivirás esta vez?",
+        "{user}, has cambiado tu senda a {clase}.\n¿Crees que así evitarás la tragedia? ¡Qué ingenuidad!."
     ],
     "cambiar_clase_muerte": [
         "{user}, tu intento de cambiar de clase ha vaciado tus arcas y tu existencia.\nHas muerto y deberás crear un nuevo perfil con !elegir.",
