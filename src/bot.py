@@ -13,7 +13,7 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Listas de razas y clases
+
 RACES = [
     "Humano", "Elfo", "Orco", "Enano", "Gnomo", "Goblin", "Trol", "Dracónido", "Tiefling", "Mediano"
 ]
@@ -21,24 +21,18 @@ CLASSES = [
     "Guerrero", "Mago", "Druida", "Ladrón", "Paladín", "Bárbaro", "Clérigo", "Hechicero", "Monje", "Explorador"
 ]
 
-# Conexión a db
 database = get_database()
 
-# Define los objetos especiales del mercader
 OBJETOS_TIENDA = [
-    {"nombre": "Elixir de la Bruma 🌫️", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
+    {"nombre": "Elixir de la Bruma 🏺", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
     {"nombre": "Hongo del Abismo 🍄", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, tu enemigo pierde §100 monedas."},
-    {"nombre": "Pizza con yogur 🍕🥛", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
+    {"nombre": "Pizza con yogur 🍕", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
 ]
 
-# Define el precio de cambiar raza o clase en una sola variable
+OBJETOS_ESPECIALES = [obj["nombre"] for obj in OBJETOS_TIENDA]
+
 PRECIO_CAMBIO = 200
 
-OBJETOS_ESPECIALES = [
-    "Elixir de la Bruma 🌫️",
-    "Hongo del Abismo 🍄",
-    "Pizza con yogur 🍕🥛"
-]
 
 @bot.command(name="info")
 async def info(ctx):
