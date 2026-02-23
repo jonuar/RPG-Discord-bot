@@ -260,11 +260,15 @@ async def duelo(ctx, oponente: discord.Member):
             f"¡{ctx.author.mention} aplasta a su rival y saquea §{ganancia} monedas de su bolsa! {oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido."
         )
         await ctx.send(resultado)
+        return
     elif dado_rival > dado_jugador:
         if efecto == "elixir_bruma":
             # El jugador NO pierde monedas
             await database.update_user(ctx.author.id, {"coins": jugador["coins"]})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
+            #resultado += mensaje_objeto
+            await ctx.send(resultado)
+            return
         elif efecto == "hongo_abismo":
             coins_jugador = max(1, jugador["coins"] - 100)
             coins_oponente = max(1, rival["coins"] - 100)
@@ -272,8 +276,8 @@ async def duelo(ctx, oponente: discord.Member):
             await database.update_user(ctx.author.id, {"coins": coins_jugador})
             # El oponente pierde 100 monedas extra (pero no menos de 1)
             await database.update_user(oponente.id, {"coins": coins_oponente})
-            resultado += mensaje_objeto
             await ctx.send(resultado)
+            return
         else:
             # Lógica normal
             await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
