@@ -38,24 +38,31 @@ OBJETOS_TIENDA = [
     {"nombre": "Pizza con yogur", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
 ]
 
-@bot.command(name="info")
-async def mostrar_ayuda(ctx):
-    help_text = (
-        "**Comandos disponibles:**\n"
-        "`!razas` - Muestra la lista de razas disponibles.\n"
-        "`!clases` - Muestra la lista de clases disponibles.\n"
-        "`!elegir <número><letra>` - Elige tu raza y clase. Ejemplo: `!elegir 1A`\n"
-        "`!perfil` - Muestra tu perfil actual.\n"
-        "`!cambiar_raza <número>` - Cambia tu raza después de crear tu perfil. Cuesta 200 monedas. Si llegas a 0 monedas, tu personaje muere y debes crear uno nuevo.\n"
-        "`!cambiar_clase <letra>` - Cambia tu clase después de crear tu perfil. Cuesta 200 monedas. Si llegas a 0 monedas, tu personaje muere y debes crear uno nuevo.\n"
-        "`!duelo @usuario` - Reta a otro jugador a un duelo de dados. Ambos deben tener perfil y al menos 100 monedas. El ganador recibe 100 monedas del perdedor. Si un jugador queda en 0 monedas, muere y debe crear un nuevo perfil.\n"
-        "`!info` - Muestra este mensaje de ayuda.\n\n"
+# Define el precio de cambiar raza o clase en una sola variable
+PRECIO_CAMBIO = 200
 
-        "Notas:\n"
-        "-> Si tu personaje llega a 0 monedas, muere y debes crear uno nuevo con `!elegir`.\n"
-        "-> Si retas a duelo a alguien sin perfil, será mencionado y recibirá instrucciones para crearlo.\n"
+@bot.command(name="info")
+async def info(ctx):
+    mensaje = (
+        "**Comandos principales:**\n"
+        "`!razas` y `!clases` - Consulta las opciones disponibles.\n"
+        "`!elegir <número><letra>` - Crea tu perfil eligiendo raza y clase.\n"
+        "`!perfil` - Muestra tu perfil actual.\n"
+        "`!duelo @usuario` - Reta a otro jugador a un duelo.\n"
+        f"`!cambiar_raza <número>` - Cambia tu raza por un precio.\n"
+        f"`!cambiar_clase <letra>` - Cambia tu clase por un precio.\n"
+        "`!tienda` - Muestra los objetos que puedes comprar al mercader.\n"
+        "`!comprar <número>` - Compra un objeto de la tienda para tu inventario.\n"
+        "\n"
+        "**Reglas y mecánicas:**\n"
+        "- Cambiar de raza o clase cuesta {PRECIO_CAMBIO} monedas.\n"
+        "- Los duelos se resuelven con dados. El ganador obtiene monedas del perdedor.\n"
+        "- Si pierdes todas tus monedas, tu perfil será eliminado y deberás empezar de nuevo.\n"
+        "- Los objetos de la tienda pueden alterar el resultado de los duelos.\n"
+        "- Los objetos se usan automáticamente en los duelos si tienes alguno en tu inventario.\n"
+        "- Si tienes más de un objeto especial en tu inventario, se usará uno de manera aleatoria en el duelo.\n"
     )
-    await ctx.send(help_text)
+    await ctx.send(mensaje)
 
 @bot.command(name="razas")
 async def listar_razas(ctx):
@@ -126,10 +133,10 @@ async def cambiar_raza(ctx, numero: int):
         await ctx.send(obtener_dialogo("cambiar_raza_misma", user=ctx.author.mention))
         return
     coins = user.get("coins", 0)
-    if coins < 200:
-        await ctx.send("Tus bolsillos están tan vacíos como tu esperanza. Necesitas 200 monedas para cambiar de raza.")
+    if coins < PRECIO_CAMBIO:
+        await ctx.send(f"Tus bolsillos están tan vacíos como tu esperanza. Necesitas {PRECIO_CAMBIO} monedas para cambiar de raza.")
         return
-    new_coins = coins - 200
+    new_coins = coins - PRECIO_CAMBIO
     if new_coins <= 0:
         await database.delete_user(ctx.author.id)
         await ctx.send(obtener_dialogo("cambiar_raza_muerte", user=ctx.author.mention))
@@ -153,10 +160,10 @@ async def cambiar_clase(ctx, letra: str):
         await ctx.send(obtener_dialogo("cambiar_clase_misma", user=ctx.author.mention))
         return
     coins = user.get("coins", 0)
-    if coins < 200:
-        await ctx.send("No tienes suficientes monedas. Quizás vender tu alma sea más rentable.")
+    if coins < PRECIO_CAMBIO:
+        await ctx.send(f"No tienes suficientes monedas. Necesitas {PRECIO_CAMBIO} monedas para cambiar de clase.")
         return
-    new_coins = coins - 200
+    new_coins = coins - PRECIO_CAMBIO
     if new_coins <= 0:
         await database.delete_user(ctx.author.id)
         await ctx.send(obtener_dialogo("cambiar_clase_muerte", user=ctx.author.mention))
@@ -227,15 +234,13 @@ async def duelo(ctx, oponente: discord.Member):
 
     # Construye el resultado base
     resultado = (
-        f"En la arena de la vergüenza, {ctx.author.mention} lanza su dado y obtiene **{dado_jugador}**.\n"
+        f"En la Arena del Azar, {ctx.author.mention} lanza su dado y obtiene **{dado_jugador}**.\n"
         f"{oponente.mention} responde con un giro dramático y saca **{dado_rival}**.\n"
     )
 
-    # Agrega el mensaje especial si existe
     if mensaje_objeto:
         resultado += mensaje_objeto + "\n"
 
-    # Ahora, según el efecto, modifica el flujo:
     if dado_jugador > dado_rival:
         if efecto == "pizza_yogur":
             pass
