@@ -37,7 +37,7 @@ PRECIO_CAMBIO = 200
 @bot.command(name="info")
 async def info(ctx):
     mensaje = (
-        "**Comandos principales:**\n"
+        "**Comandos principalesLOCAL DEV:**\n"
         "`!razas` y `!clases` - Consulta las opciones disponibles.\n"
         "`!elegir <número><letra>` - Crea tu perfil eligiendo raza y clase.\n"
         "`!perfil` - Muestra tu perfil actual.\n"
@@ -333,26 +333,30 @@ async def aplicar_objeto_duelo(ctx, user, oponente, dado_user, dado_oponente):
     mensaje = ""
 
     especiales = [nombre for nombre in OBJETOS_ESPECIALES if nombre in inventario]
-    if especiales:
-        objeto_usado = random.choice(especiales)
-        inventario.remove(objeto_usado)
-        await database.update_user(ctx.author.id, {"inventory": inventario})
-    else:
+    if not especiales:
         return None, ""
 
+    objeto_usado = random.choice(especiales)
+
+    # Elixir de la Bruma: solo se elimina si pierde
     if objeto_usado == "Elixir de la Bruma 🏺" and dado_user < dado_oponente:
+        inventario.remove(objeto_usado)
+        await database.update_user(ctx.author.id, {"inventory": inventario})
         efecto = "elixir_bruma"
         mensaje = obtener_dialogo("duelo_objeto_elixir_bruma", user=ctx.author.mention)
+    # Hongo del Abismo: solo se elimina si pierde
     elif objeto_usado == "Hongo del Abismo 🍄" and dado_user < dado_oponente:
+        inventario.remove(objeto_usado)
+        await database.update_user(ctx.author.id, {"inventory": inventario})
         efecto = "hongo_abismo"
-        # Devuelve el efecto y el mensaje
         mensaje = obtener_dialogo("duelo_objeto_hongo_abismo", user=ctx.author.mention, enemigo=oponente.mention)
+    # Pizza con yogur: solo se elimina si gana
     elif objeto_usado == "Pizza con yogur 🍕" and dado_user > dado_oponente:
+        inventario.remove(objeto_usado)
+        await database.update_user(ctx.author.id, {"inventory": inventario})
         efecto = "pizza_yogur"
-        coins = user.get("coins", 0)
-        await database.update_user(ctx.author.id, {"coins": coins * 3})
         mensaje = obtener_dialogo("duelo_objeto_pizza_yogur", user=ctx.author.mention)
     return efecto, mensaje
 
-
+print("LOCAL DEV")
 bot.run(DISCORD_TOKEN)
