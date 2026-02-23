@@ -54,6 +54,7 @@ async def info(ctx):
         "- Los objetos de la tienda pueden alterar el resultado de los duelos.\n"
         "- Los objetos se usan automáticamente en los duelos si tienes alguno en tu inventario.\n"
         "- Si tienes más de un objeto especial en tu inventario, se usará uno de manera aleatoria en el duelo.\n"
+        "- Solo puedes tener un ejemplar de cada objeto en tu inventario.**\n"
     )
     await ctx.send(mensaje)
 
@@ -303,11 +304,15 @@ async def comprar_objeto(ctx, numero: int):
         await ctx.send("Ese objeto no existe en la tienda. Usa `!tienda` para ver las opciones.")
         return
     objeto = OBJETOS_TIENDA[numero - 1]
+    inventario = user.get("inventory", [])
+    if objeto["nombre"] in inventario:
+        await ctx.send(f"Ya tienes un **{objeto['nombre']}** en tu inventario. Apacigua tu codicia.")
+        return
     coins = user.get("coins", 0)
     if coins < objeto["precio"]:
         await ctx.send(obtener_dialogo("compra_fallo"))
         return
-    nuevo_inventario = user.get("inventory", []) + [objeto["nombre"]]
+    nuevo_inventario = inventario + [objeto["nombre"]]
     await database.update_user(ctx.author.id, {
         "coins": coins - objeto["precio"],
         "inventory": nuevo_inventario
