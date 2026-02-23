@@ -25,7 +25,7 @@ database = get_database()
 
 OBJETOS_TIENDA = [
     {"nombre": "Elixir de la Bruma 🏺", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
-    {"nombre": "Hongo del Abismo 🍄", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, tu enemigo pierde §100 monedas."},
+    {"nombre": "Hongo del Abismo 🍄", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, tu enemigo también pierde §100 monedas."},
     {"nombre": "Pizza con yogur 🍕", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
 ]
 
@@ -236,32 +236,41 @@ async def duelo(ctx, oponente: discord.Member):
         resultado += mensaje_objeto + "\n"
 
     if dado_jugador > dado_rival:
+        # El jugador gana el duelo
+        ganancia = 100
+        saldo_previo = jugador["coins"]
+        saldo_con_ganancia = saldo_previo + ganancia
+
         if efecto == "pizza_yogur":
-            pass
-        await database.update_user(ctx.author.id, {"coins": jugador["coins"] + 100})
-        await database.update_user(oponente.id, {"coins": rival["coins"] - 100})
-        # ¿Oponente murió?
-        if rival["coins"] - 100 <= 0:
-            await database.delete_user(oponente.id)
-            resultado += (
-                f"\n{oponente.mention} ha perdido todas sus monedas y su alma ha sido reclamada. "
-                "Deberá forjar un nuevo destino con `!elegir`."
-            )
+            saldo_final = saldo_con_ganancia * 3
+            # Actualiza el saldo multiplicado
+            await database.update_user(ctx.author.id, {"coins": saldo_final})
+            # Elimina la pizza del inventario (esto ya lo haces en aplicar_objeto_duelo)
         else:
-            resultado += (
-                f"¡{ctx.author.mention} aplasta a su rival y saquea §100 monedas de su bolsa! "
-                f"{oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido."
-            )
+            saldo_final = saldo_con_ganancia
+            await database.update_user(ctx.author.id, {"coins": saldo_final})
+
+        # El oponente pierde monedas normalmente
+        await database.update_user(oponente.id, {"coins": rival["coins"] - ganancia})
+
+        # Construye y envía el mensaje de resultado (incluyendo mensaje_objeto si aplica)
+        resultado += (
+            f"¡{ctx.author.mention} aplasta a su rival y saquea §{ganancia} monedas de su bolsa! {oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido."
+        )
+        await ctx.send(resultado)
     elif dado_rival > dado_jugador:
         if efecto == "elixir_bruma":
-            # No restes monedas al jugador
+            # El jugador NO pierde monedas
+            await database.update_user(ctx.author.id, {"coins": jugador["coins"]})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
-            resultado += f"{ctx.author.mention} usó el Elixir de la Bruma y no pierde monedas.\n"
         elif efecto == "hongo_abismo":
-            # Ya se descontaron monedas al rival en la función
+            # El jugador pierde monedas normalmente
             await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
-            resultado += f"{ctx.author.mention} usó el Hongo del Abismo.\n{oponente.mention} pierde §100 monedas aunque haya ganado.\n"
+            # El oponente pierde 100 monedas extra (pero no menos de 1)
+            new_rival_coins = max(1, rival["coins"] + 100 - 100)  # +100 por ganar, -100 por el hongo
+            await database.update_user(oponente.id, {"coins": new_rival_coins})
         else:
+            # Lógica normal
             await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
         # ¿Jugador muerto?
