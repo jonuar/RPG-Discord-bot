@@ -1,16 +1,9 @@
-import os
 import discord
 from discord.ext import commands
 from db import get_database
 from config import Config
 import random
 from dialogs import obtener_dialogo
-
-
-'''
-TODO
--Implementar compras de inventario.
-'''
 
 
 
@@ -33,8 +26,8 @@ database = get_database()
 
 # Define los objetos especiales del mercader
 OBJETOS_TIENDA = [
-    {"nombre": "Elixir de la Bruma", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, no pierdes monedas."},
-    {"nombre": "Hongo del Abismo", "precio": 100, "descripcion": "Afecta a tu enemigo: si pierdes, tu enemigo pierde 100 monedas."},
+    {"nombre": "Elixir de la Bruma", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
+    {"nombre": "Hongo del Abismo", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, tu enemigo pierde §100 monedas."},
     {"nombre": "Pizza con yogur", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
 ]
 
@@ -43,7 +36,7 @@ PRECIO_CAMBIO = 200
 
 OBJETOS_ESPECIALES = [
     "Elixir de la Bruma",
-    "Hongo del abismo",
+    "Hongo del Abismo",
     "Pizza con yogur"
 ]
 
@@ -61,7 +54,7 @@ async def info(ctx):
         "`!comprar <número>` - Compra un objeto de la tienda para tu inventario.\n"
         "\n"
         "**Reglas y mecánicas:**\n"
-        "- Cambiar de raza o clase cuesta {PRECIO_CAMBIO} monedas.\n"
+        f"- Cambiar de raza o clase cuesta {PRECIO_CAMBIO} monedas.\n"
         "- Los duelos se resuelven con dados. El ganador obtiene monedas del perdedor.\n"
         "- Si pierdes todas tus monedas, tu perfil será eliminado y deberás empezar de nuevo.\n"
         "- Los objetos de la tienda pueden alterar el resultado de los duelos.\n"
@@ -225,7 +218,7 @@ async def duelo(ctx, oponente: discord.Member):
 
     if jugador.get("coins", 0) < 100 or rival.get("coins", 0) < 100:
         await ctx.send(
-            "Ambos deben tener al menos 100 monedas para arriesgar en este duelo. "
+            "Ambos deben tener al menos §100 monedas para arriesgar en este duelo. "
             "Sin oro, solo les queda pelear por migajas... o por su dignidad."
         )
         return
@@ -261,7 +254,7 @@ async def duelo(ctx, oponente: discord.Member):
             )
         else:
             resultado += (
-                f"¡{ctx.author.mention} aplasta a su rival y saquea 100 monedas de su bolsa! "
+                f"¡{ctx.author.mention} aplasta a su rival y saquea §100 monedas de su bolsa! "
                 f"{oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido."
             )
     elif dado_rival > dado_jugador:
@@ -272,7 +265,7 @@ async def duelo(ctx, oponente: discord.Member):
         elif efecto == "hongo_abismo":
             # Ya se descontaron monedas al rival en la función
             await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
-            resultado += f"{ctx.author.mention} usó el Hongo del Abismo. {oponente.mention} pierde 100 monedas aunque haya ganado.\n"
+            resultado += f"{ctx.author.mention} usó el Hongo del Abismo.\n{oponente.mention} pierde §100 monedas aunque haya ganado.\n"
         else:
             await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
@@ -285,7 +278,7 @@ async def duelo(ctx, oponente: discord.Member):
             )
         else:
             resultado += (
-                f"¡{oponente.mention} se alza victorioso y roba 100 monedas! "
+                f"¡{oponente.mention} se alza victorioso y roba §100 monedas! "
                 f"{ctx.author.mention}, quizás la suerte te sonría en tu próxima vida... o no."
             )
     else:

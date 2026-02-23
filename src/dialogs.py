@@ -40,12 +40,12 @@ DIALOGOS = {
         "{retador} y {oponente} se enfrentan bajo la mirada burlona de los dioses.\nQue los dados hablen."
     ],
     "duelo_gana_retador": [
-        "¡{retador} aplasta a {oponente} y saquea 100 monedas de su bolsa!\n{oponente}, siempre puedes vender tu dignidad para recuperar el oro perdido.",
-        "La suerte sonríe a {retador}, que se lleva 100 monedas\ny deja a {oponente} contando sus cicatrices.",
+        "¡{retador} aplasta a {oponente} y saquea §100 monedas de su bolsa!\n{oponente}, siempre puedes vender tu dignidad para recuperar el oro perdido.",
+        "La suerte sonríe a {retador}, que se lleva §100 monedas\ny deja a {oponente} contando sus cicatrices.",
         "{retador} celebra la victoria mientras {oponente} lamenta su existencia y su pobreza."
     ],
     "duelo_gana_oponente": [
-        "¡{oponente} se alza victorioso y roba 100 monedas!\n{retador}, quizás la suerte te sonría en tu próxima vida... o no.",
+        "¡{oponente} se alza victorioso y roba §100 monedas!\n{retador}, quizás la suerte te sonría en tu próxima vida... o no.",
         "{oponente} ríe mientras recoge las monedas de {retador},\nque ahora debe replantearse sus decisiones.",
         "El destino favorece a {oponente}, que se lleva el oro\ny deja a {retador} en la miseria."
     ],
@@ -95,19 +95,19 @@ DIALOGOS = {
         "Intentas elegir una clase prohibida.\nUsa !clases."
     ],
     "tienda_intro": [
-        "Una figura sombría, cubierta de alhajas tintineantes, emerge de las sombras. \"Bienvenido, viajero... Soy **El mercader**. ¿Buscas poder, suerte o simplemente tentar a la muerte? Esto es lo que tengo para ti:\"",
-        "Entre las penumbras, **El mercader** te observa con ojos brillantes tras una máscara de joyas. \"¿Interesado en mis exóticos productos? El precio es justo... o eso dicen los espíritus.\"",
-        "Un susurro metálico te rodea mientras **El mercader** despliega su manto repleto de baratijas. \"Elige con cuidado, forastero. Cada objeto tiene su precio... y su consecuencia.\""
+        "Una figura sombría, cubierta de alhajas tintineantes, emerge de las sombras.\n\"Bienvenido, viajero... Soy **El Mercader**. ¿Buscas poder, suerte o simplemente tentar a la muerte? Esto es lo que tengo para ti:\"",
+        "Entre las penumbras, **El mercader** te observa con ojos brillantes tras una máscara de joyas.\n\"¿Interesado en mis exóticos productos? El precio es justo... o eso dicen los espíritus.\"",
+        "Un susurro metálico te rodea mientras **El mercader** despliega su manto repleto de baratijas.\n\"Elige con cuidado, forastero. Cada objeto tiene su precio... y su consecuencia.\""
     ],
     "compra_exito": [
-        "\"Excelente elección...\", murmura **El mercader** mientras te entrega el {objeto}. \"Que el destino te sea propicio... o al menos entretenido.\"",
-        "**El mercader** sonríe con dientes dorados. \"{objeto} es tuyo. Recuerda: toda bendición es una maldición disfrazada.\"",
-        "Con un gesto ágil, **El mercader** te pasa el {objeto}. \"No acepto devoluciones, ni almas rotas.\""
+        "\"Excelente elección...\", murmura **El mercader** mientras te entrega el {objeto}.\n\"Que el destino te sea propicio... o al menos entretenido.\"",
+        "**El mercader** sonríe con dientes dorados.\n\"{objeto} es tuyo. Recuerda: toda bendición es una maldición disfrazada.\"",
+        "Con un gesto ágil, **El mercader** te pasa el {objeto}.\n\"No acepto devoluciones, ni almas rotas.\""
     ],
     "compra_fallo": [
-        "\"No tienes suficiente oro para mis tesoros, pobre alma...\", se burla **El mercader**.",
-        "**El mercader** sacude la cabeza. \"Vuelve cuando tu bolsa pese más que tus sueños rotos.\"",
-        "\"El oro abre puertas, la pobreza las cierra. Vuelve cuando puedas pagar, viajero.\""
+        "\"No tienes suficiente oro para mis tesoros, pobre alma...\", se burla **El Mercader**.",
+        "**El mercader** sacude la cabeza.\n\"Vuelve cuando tu bolsa pese más que tus sueños rotos.\"",
+        "\"El oro abre puertas, la pobreza las cierra.\nVuelve cuando puedas pagar.\""
     ],
     "duelo_objeto_elixir_bruma": [
         "{user} invoca el poder del **Elixir de la Bruma**. Una niebla misteriosa lo envuelve y ninguna moneda abandona su bolsa.",
@@ -115,9 +115,9 @@ DIALOGOS = {
         "La bruma esmeralda rodea a {user}, evitando que el oro cambie de manos tras la derrota."
     ],
     "duelo_objeto_hongo_abismo": [
-        "{user} consume el **Hongo del abismo**. {enemigo} siente un escalofrío y pierde 100 monedas, aunque haya ganado.",
-        "El **Hongo del abismo** libera su maldición: {enemigo} paga el precio de la victoria con 100 monedas menos.",
-        "{user} sonríe sombríamente tras comer el hongo, mientras {enemigo} ve desaparecer 100 monedas de su bolsa."
+        "{user} consume el **Hongo del abismo**.\n{enemigo} siente un escalofrío y pierde §100 monedas, aunque haya ganado.",
+        "El **Hongo del abismo** libera su maldición:\n{enemigo} paga el precio de la victoria con §100 monedas menos.",
+        "{user} sonríe sombríamente tras comer el hongo,\nmientras {enemigo} ve desaparecer §100 monedas de su bolsa."
     ],
     "duelo_objeto_pizza_yogur": [
         "{user} devora la **Pizza con yogur**. ¡Su fortuna se triplica ante la mirada incrédula de todos!",
