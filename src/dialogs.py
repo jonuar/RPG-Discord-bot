@@ -94,6 +94,36 @@ DIALOGOS = {
         "¿Clase secreta? No existe.\nUsa !clases.",
         "Intentas elegir una clase prohibida.\nUsa !clases."
     ],
+    "tienda_intro": [
+        "Una figura sombría, cubierta de alhajas tintineantes, emerge de las sombras. \"Bienvenido, viajero... Soy **El mercader**. ¿Buscas poder, suerte o simplemente tentar a la muerte? Esto es lo que tengo para ti:\"",
+        "Entre las penumbras, **El mercader** te observa con ojos brillantes tras una máscara de joyas. \"¿Interesado en mis exóticos productos? El precio es justo... o eso dicen los espíritus.\"",
+        "Un susurro metálico te rodea mientras **El mercader** despliega su manto repleto de baratijas. \"Elige con cuidado, forastero. Cada objeto tiene su precio... y su consecuencia.\""
+    ],
+    "compra_exito": [
+        "\"Excelente elección...\", murmura **El mercader** mientras te entrega el {objeto}. \"Que el destino te sea propicio... o al menos entretenido.\"",
+        "**El mercader** sonríe con dientes dorados. \"{objeto} es tuyo. Recuerda: toda bendición es una maldición disfrazada.\"",
+        "Con un gesto ágil, **El mercader** te pasa el {objeto}. \"No acepto devoluciones, ni almas rotas.\""
+    ],
+    "compra_fallo": [
+        "\"No tienes suficiente oro para mis tesoros, pobre alma...\", se burla **El mercader**.",
+        "**El mercader** sacude la cabeza. \"Vuelve cuando tu bolsa pese más que tus sueños rotos.\"",
+        "\"El oro abre puertas, la pobreza las cierra. Vuelve cuando puedas pagar, viajero.\""
+    ],
+    "duelo_objeto_elixir_bruma": [
+        "{user} invoca el poder del **Elixir de la Bruma**. Una niebla misteriosa lo envuelve y ninguna moneda abandona su bolsa.",
+        "El **Elixir de la Bruma** protege a {user}, que sale ileso de la derrota, sin perder ni una sola moneda.",
+        "La bruma esmeralda rodea a {user}, evitando que el oro cambie de manos tras la derrota."
+    ],
+    "duelo_objeto_hongo_abismo": [
+        "{user} consume el **Hongo del abismo**. {enemigo} siente un escalofrío y pierde 100 monedas, aunque haya ganado.",
+        "El **Hongo del abismo** libera su maldición: {enemigo} paga el precio de la victoria con 100 monedas menos.",
+        "{user} sonríe sombríamente tras comer el hongo, mientras {enemigo} ve desaparecer 100 monedas de su bolsa."
+    ],
+    "duelo_objeto_pizza_yogur": [
+        "{user} devora la **Pizza con yogur**. ¡Su fortuna se triplica ante la mirada incrédula de todos!",
+        "El poder de la **Pizza con yogur** multiplica la bolsa de {user} por tres. ¡La gula a veces paga!",
+        "{user} saborea la extraña pizza y el oro fluye como nunca antes: ¡bolsa triplicada!"
+    ],
 }
 
 def obtener_dialogo(clave, **kwargs):

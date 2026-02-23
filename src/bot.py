@@ -31,6 +31,13 @@ CLASSES = [
 # Conexión a db
 database = get_database()
 
+# Define los objetos especiales del mercader
+OBJETOS_TIENDA = [
+    {"nombre": "Elixir de la Bruma", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, no pierdes monedas."},
+    {"nombre": "Hongo del abismo", "precio": 100, "descripcion": "Afecta a tu enemigo: si pierdes, tu enemigo pierde 100 monedas."},
+    {"nombre": "Pizza con yogur", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
+]
+
 @bot.command(name="info")
 async def mostrar_ayuda(ctx):
     help_text = (
@@ -213,15 +220,28 @@ async def duelo(ctx, oponente: discord.Member):
     dado_jugador = random.randint(1, 20)
     dado_rival = random.randint(1, 20)
 
+    # Aplica el objeto especial (si existe) y recibe el efecto y mensaje
+    efecto, mensaje_objeto = await aplicar_objeto_duelo(
+        ctx, jugador, rival, dado_jugador, dado_rival
+    )
+
+    # Construye el resultado base
     resultado = (
         f"En la arena de la vergüenza, {ctx.author.mention} lanza su dado y obtiene **{dado_jugador}**.\n"
         f"{oponente.mention} responde con un giro dramático y saca **{dado_rival}**.\n"
     )
 
+    # Agrega el mensaje especial si existe
+    if mensaje_objeto:
+        resultado += mensaje_objeto + "\n"
+
+    # Ahora, según el efecto, modifica el flujo:
     if dado_jugador > dado_rival:
+        if efecto == "pizza_yogur":
+            pass
         await database.update_user(ctx.author.id, {"coins": jugador["coins"] + 100})
         await database.update_user(oponente.id, {"coins": rival["coins"] - 100})
-        # Verifica si el oponente murió
+        # ¿Oponente murió?
         if rival["coins"] - 100 <= 0:
             await database.delete_user(oponente.id)
             resultado += (
@@ -234,8 +254,17 @@ async def duelo(ctx, oponente: discord.Member):
                 f"{oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido."
             )
     elif dado_rival > dado_jugador:
-        await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
-        await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
+        if efecto == "elixir_bruma":
+            # No restes monedas al jugador
+            await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
+            resultado += f"{ctx.author.mention} usó el Elixir de la Bruma y no pierde monedas.\n"
+        elif efecto == "hongo_abismo":
+            # Ya se descontaron monedas al rival en la función
+            await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
+            resultado += f"{ctx.author.mention} usó el Hongo del abismo. {oponente.mention} pierde 100 monedas aunque haya ganado.\n"
+        else:
+            await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
+            await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
         # ¿Jugador muerto?
         if jugador["coins"] - 100 <= 0:
             await database.delete_user(ctx.author.id)
@@ -249,11 +278,74 @@ async def duelo(ctx, oponente: discord.Member):
                 f"{ctx.author.mention}, quizás la suerte te sonría en tu próxima vida... o no."
             )
     else:
+        # Empate
         resultado += (
             "¡Empate! Los dioses del azar se burlan de ambos y nadie gana ni pierde monedas. "
             "Quizás deberían dedicarse a la poesía."
         )
 
     await ctx.send(resultado)
+
+@bot.command(name="tienda")
+async def mostrar_tienda(ctx):
+    intro = obtener_dialogo("tienda_intro")
+    mensaje = f"{intro}\n\n"
+    for i, obj in enumerate(OBJETOS_TIENDA, 1):
+        mensaje += f"{i}. **{obj['nombre']}** (§{obj['precio']}): {obj['descripcion']}\n"
+    mensaje += "\nUsa `!comprar <número>` para adquirir un objeto."
+    await ctx.send(mensaje)
+
+@bot.command(name="comprar")
+async def comprar_objeto(ctx, numero: int):
+    user = await database.read_user(ctx.author.id)
+    if not user:
+        await ctx.send("Debes tener un perfil antes de comprar. Usa `!elegir` para crearlo.")
+        return
+    if numero < 1 or numero > len(OBJETOS_TIENDA):
+        await ctx.send("Ese objeto no existe en la tienda. Usa `!tienda` para ver las opciones.")
+        return
+    objeto = OBJETOS_TIENDA[numero - 1]
+    coins = user.get("coins", 0)
+    if coins < objeto["precio"]:
+        await ctx.send(obtener_dialogo("compra_fallo"))
+        return
+    nuevo_inventario = user.get("inventory", []) + [objeto["nombre"]]
+    await database.update_user(ctx.author.id, {
+        "coins": coins - objeto["precio"],
+        "inventory": nuevo_inventario
+    })
+    await ctx.send(obtener_dialogo("compra_exito", objeto=objeto["nombre"]))
+
+# Uso de objetos en duelo
+async def aplicar_objeto_duelo(ctx, user, oponente, dado_user, dado_oponente):
+    inventario = user.get("inventory", [])
+    efecto = None
+    mensaje = ""
+
+    for nombre in ["Elixir de la Bruma", "Hongo del abismo", "Pizza con yogur"]:
+        if nombre in inventario:
+            objeto_usado = nombre
+            inventario.remove(objeto_usado)
+            await database.update_user(ctx.author.id, {"inventory": inventario})
+            break
+    else:
+        return None, ""
+
+    if objeto_usado == "Elixir de la Bruma" and dado_user < dado_oponente:
+        efecto = "elixir_bruma"
+        mensaje = obtener_dialogo("duelo_objeto_elixir_bruma", user=ctx.author.mention)
+    elif objeto_usado == "Hongo del abismo" and dado_user < dado_oponente:
+        efecto = "hongo_abismo"
+        rival_coins = oponente.get("coins", 0)
+        new_rival_coins = max(1, rival_coins - 100)
+        await database.update_user(oponente["user_id"], {"coins": new_rival_coins})
+        mensaje = obtener_dialogo("duelo_objeto_hongo_abismo", user=ctx.author.mention, enemigo=oponente.mention)
+    elif objeto_usado == "Pizza con yogur" and dado_user > dado_oponente:
+        efecto = "pizza_yogur"
+        coins = user.get("coins", 0)
+        await database.update_user(ctx.author.id, {"coins": coins * 3})
+        mensaje = obtener_dialogo("duelo_objeto_pizza_yogur", user=ctx.author.mention)
+    return efecto, mensaje
+
 
 bot.run(DISCORD_TOKEN)
