@@ -259,11 +259,14 @@ async def duelo(ctx, oponente: discord.Member):
             await database.update_user(ctx.author.id, {"coins": jugador["coins"]})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
         elif efecto == "hongo_abismo":
+            coins_jugador = max(1, jugador["coins"] - 100)
+            coins_oponente = max(1, rival["coins"] - 100)
             # El jugador pierde monedas normalmente
-            await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
+            await database.update_user(ctx.author.id, {"coins": coins_jugador})
             # El oponente pierde 100 monedas extra (pero no menos de 1)
-            new_rival_coins = max(1, rival["coins"] + 100 - 100)  # +100 por ganar, -100 por el hongo
-            await database.update_user(oponente.id, {"coins": new_rival_coins})
+            await database.update_user(oponente.id, {"coins": coins_oponente})
+            resultado += mensaje_objeto
+            await ctx.send(resultado)
         else:
             # Lógica normal
             await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
