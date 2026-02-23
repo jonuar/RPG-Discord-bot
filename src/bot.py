@@ -26,18 +26,18 @@ database = get_database()
 
 # Define los objetos especiales del mercader
 OBJETOS_TIENDA = [
-    {"nombre": "Elixir de la Bruma", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
-    {"nombre": "Hongo del Abismo", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, tu enemigo pierde §100 monedas."},
-    {"nombre": "Pizza con yogur", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
+    {"nombre": "Elixir de la Bruma 🌫️", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
+    {"nombre": "Hongo del Abismo 🍄", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, tu enemigo pierde §100 monedas."},
+    {"nombre": "Pizza con yogur 🍕🥛", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
 ]
 
 # Define el precio de cambiar raza o clase en una sola variable
 PRECIO_CAMBIO = 200
 
 OBJETOS_ESPECIALES = [
-    "Elixir de la Bruma",
-    "Hongo del Abismo",
-    "Pizza con yogur"
+    "Elixir de la Bruma 🌫️",
+    "Hongo del Abismo 🍄",
+    "Pizza con yogur 🍕🥛"
 ]
 
 @bot.command(name="info")
