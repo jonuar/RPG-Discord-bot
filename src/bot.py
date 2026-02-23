@@ -290,7 +290,7 @@ async def duelo(ctx, oponente: discord.Member):
             "Quizás deberían dedicarse a la poesía."
         )
 
-    await ctx.send(resultado)
+        await ctx.send(resultado)
 
 @bot.command(name="tienda")
 async def mostrar_tienda(ctx):
