@@ -237,19 +237,17 @@ async def duelo(ctx, oponente: discord.Member):
 
     if dado_jugador > dado_rival:
         # El jugador gana el duelo
-        ganancia = 100
         saldo_previo = jugador["coins"]
-        saldo_con_ganancia = saldo_previo + ganancia
-
         if efecto == "pizza_yogur":
-            saldo_final = saldo_con_ganancia * 3
-            # Actualiza el saldo multiplicado
+            ganancia = 100 * 3
+            saldo_final = saldo_previo + ganancia
             await database.update_user(ctx.author.id, {"coins": saldo_final})
-            # Elimina la pizza del inventario (esto ya lo haces en aplicar_objeto_duelo)
+            await database.update_user(oponente.id, {"coins": rival["coins"] - 100})
         else:
-            saldo_final = saldo_con_ganancia
+            ganancia = 100
+            saldo_final = saldo_previo + ganancia
             await database.update_user(ctx.author.id, {"coins": saldo_final})
-
+            await database.update_user(oponente.id, {"coins": rival["coins"] - ganancia})
         # El oponente pierde monedas normalmente
         await database.update_user(oponente.id, {"coins": rival["coins"] - ganancia})
 
