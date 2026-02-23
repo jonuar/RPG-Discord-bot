@@ -115,9 +115,9 @@ DIALOGOS = {
         "La bruma esmeralda rodea a {user}, evitando que el oro cambie de manos tras la derrota."
     ],
     "duelo_objeto_hongo_abismo": [
-        "{user} consume el **Hongo del abismo**.\n{enemigo} siente un escalofrío y pierde §100 monedas, aunque haya ganado.",
-        "El **Hongo del abismo** libera su maldición:\n{enemigo} paga el precio de la victoria con §100 monedas menos.",
-        "{user} sonríe sombríamente tras comer el hongo,\nmientras {enemigo} ve desaparecer §100 monedas de su bolsa."
+        "{user} consume el **Hongo del Abismo 🍄**. Una sombra oscura envuelve la arena y ambos combatientes pierden §100 monedas.",
+        "El **Hongo del Abismo 🍄** libera su maldición: tanto {user} como {enemigo} sienten el peso de la derrota y pierden §100 monedas.",
+        "{user} sonríe sombríamente tras comer el hongo, y la desgracia cae sobre ambos: §100 monedas menos para cada uno."
     ],
     "duelo_objeto_pizza_yogur": [
         "{user} devora la **Pizza con yogur**. ¡Su fortuna se triplica ante la mirada incrédula de todos!",

@@ -25,7 +25,7 @@ database = get_database()
 
 OBJETOS_TIENDA = [
     {"nombre": "Elixir de la Bruma 🏺", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
-    {"nombre": "Hongo del Abismo 🍄", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, tu enemigo también pierde §100 monedas."},
+    {"nombre": "Hongo del Abismo 🍄", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, ambos pierden §100 monedas."},
     {"nombre": "Pizza con yogur 🍕", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
 ]
 
@@ -345,9 +345,7 @@ async def aplicar_objeto_duelo(ctx, user, oponente, dado_user, dado_oponente):
         mensaje = obtener_dialogo("duelo_objeto_elixir_bruma", user=ctx.author.mention)
     elif objeto_usado == "Hongo del Abismo 🍄" and dado_user < dado_oponente:
         efecto = "hongo_abismo"
-        rival_coins = oponente.get("coins", 0)
-        new_rival_coins = max(1, rival_coins - 100)
-        await database.update_user(oponente["user_id"], {"coins": new_rival_coins})
+        # Devuelve el efecto y el mensaje
         mensaje = obtener_dialogo("duelo_objeto_hongo_abismo", user=ctx.author.mention, enemigo=oponente.mention)
     elif objeto_usado == "Pizza con yogur 🍕" and dado_user > dado_oponente:
         efecto = "pizza_yogur"
