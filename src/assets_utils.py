@@ -1,5 +1,8 @@
 import unicodedata
 from PIL import Image
+import os
+import tempfile
+import uuid
 
 def quitar_acentos(texto):
     return ''.join(
@@ -13,6 +16,19 @@ def obtener_imagen_raza(raza):
 def obtener_imagen_clase(clase):
     return f"assets/clase_{quitar_acentos(clase.lower())}.png"
 
+def _guardar_temp_png(img, prefix):
+    temp_dir = tempfile.gettempdir()
+    nombre = f"{prefix}_{uuid.uuid4().hex}.png"
+    ruta = os.path.join(temp_dir, nombre)
+    img.save(ruta)
+    return ruta
+
+def borrar_temp(ruta):
+    try:
+        os.remove(ruta)
+    except FileNotFoundError:
+        pass
+
 def combinar_tres_horizontal(ruta1, ruta2, ruta3, alto):
     imgs = [Image.open(ruta).convert("RGBA") for ruta in [ruta1, ruta2, ruta3]]
     imgs = [img.resize((int(img.width * alto / img.height), alto)) for img in imgs]
@@ -22,14 +38,12 @@ def combinar_tres_horizontal(ruta1, ruta2, ruta3, alto):
     for img in imgs:
         nueva.paste(img, (x, 0), img)
         x += img.width
-    nueva_ruta = "temp_duelo_versus.png"
-    nueva.save(nueva_ruta)
+    nueva_ruta = _guardar_temp_png(nueva, "duelo_versus")
     return nueva_ruta
 
 def combinar_imagenes_misma_altura(ruta1, ruta2, alto):
     img1 = Image.open(ruta1)
     img2 = Image.open(ruta2)
-    # Redimensiona ambas imágenes al mismo alto, ajustando el ancho proporcionalmente
     proporcion1 = alto / img1.height
     ancho1 = int(img1.width * proporcion1)
     img1 = img1.resize((ancho1, alto))
@@ -38,12 +52,10 @@ def combinar_imagenes_misma_altura(ruta1, ruta2, alto):
     ancho2 = int(img2.width * proporcion2)
     img2 = img2.resize((ancho2, alto))
 
-    # Crea una nueva imagen para combinar ambas
     nueva = Image.new('RGBA', (ancho1 + ancho2, alto))
     nueva.paste(img1, (0, 0))
     nueva.paste(img2, (ancho1, 0))
-    nueva_ruta = "temp_combinada.png"
-    nueva.save(nueva_ruta)
+    nueva_ruta = _guardar_temp_png(nueva, "combinada")
     return nueva_ruta
 
 def redimensionar_por_alto(ruta, alto=100):
@@ -51,6 +63,5 @@ def redimensionar_por_alto(ruta, alto=100):
     proporcion = alto / img.height
     ancho = int(img.width * proporcion)
     img = img.resize((ancho, alto))
-    nueva_ruta = f"temp_{ruta.replace('/', '_')}"
-    img.save(nueva_ruta)
+    nueva_ruta = _guardar_temp_png(img, f"temp_{ruta.replace('/', '_')}")
     return nueva_ruta
