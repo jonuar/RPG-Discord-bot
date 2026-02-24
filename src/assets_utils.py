@@ -13,6 +13,19 @@ def obtener_imagen_raza(raza):
 def obtener_imagen_clase(clase):
     return f"assets/clase_{quitar_acentos(clase.lower())}.png"
 
+def combinar_tres_horizontal(ruta1, ruta2, ruta3, alto):
+    imgs = [Image.open(ruta).convert("RGBA") for ruta in [ruta1, ruta2, ruta3]]
+    imgs = [img.resize((int(img.width * alto / img.height), alto)) for img in imgs]
+    ancho_total = sum(img.width for img in imgs)
+    nueva = Image.new('RGBA', (ancho_total, alto))
+    x = 0
+    for img in imgs:
+        nueva.paste(img, (x, 0), img)
+        x += img.width
+    nueva_ruta = "temp_duelo_versus.png"
+    nueva.save(nueva_ruta)
+    return nueva_ruta
+
 def combinar_imagenes_misma_altura(ruta1, ruta2, alto):
     img1 = Image.open(ruta1)
     img2 = Image.open(ruta2)

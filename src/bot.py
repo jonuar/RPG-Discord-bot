@@ -4,7 +4,7 @@ from db import get_database
 from config import Config
 import random
 from dialogs import obtener_dialogo
-from assets_utils import obtener_imagen_raza, obtener_imagen_clase, combinar_imagenes_misma_altura, redimensionar_por_alto
+from assets_utils import combinar_tres_horizontal, obtener_imagen_raza, obtener_imagen_clase, combinar_imagenes_misma_altura, redimensionar_por_alto
 
 
 
@@ -235,6 +235,18 @@ async def duelo(ctx, oponente: discord.Member):
             "Sin oro, solo les queda pelear por migajas... o por su dignidad."
         )
         return
+    
+    raza_retador = jugador.get("race")
+    raza_oponente = rival.get("race")
+
+    # Imágenes duelo
+    img_retador = redimensionar_por_alto(obtener_imagen_raza(raza_retador), alto=90)
+    img_versus = redimensionar_por_alto("assets/duelo_versus.png", alto=90)
+    img_oponente = redimensionar_por_alto(obtener_imagen_raza(raza_oponente), alto=90)
+
+    ruta_combinada = combinar_tres_horizontal(img_retador, img_versus, img_oponente, alto=90)
+    await ctx.send(file=discord.File(ruta_combinada))
+    
 
     dado_jugador = random.randint(1, 20)
     dado_rival = random.randint(1, 20)
