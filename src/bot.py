@@ -31,7 +31,7 @@ OBJETOS_TIENDA = [
 ]
 
 OBJETOS_ESPECIALES = [obj["nombre"] for obj in OBJETOS_TIENDA]
-
+IMAGE_HEIGHT = 120
 PRECIO_CAMBIO = 200
 
 
@@ -105,9 +105,9 @@ async def elegir(ctx, opcion: str):
     clase = CLASSES[clase_idx]
     raza = RACES[raza_idx]
 
-    img_raza = redimensionar_por_alto(obtener_imagen_raza(raza), alto=90)
-    img_clase = redimensionar_por_alto(obtener_imagen_clase(clase), alto=90)
-    img_combinada = combinar_imagenes_misma_altura(img_raza, img_clase, alto=90)
+    img_raza = redimensionar_por_alto(obtener_imagen_raza(raza), alto=IMAGE_HEIGHT)
+    img_clase = redimensionar_por_alto(obtener_imagen_clase(clase), alto=IMAGE_HEIGHT)
+    img_combinada = combinar_imagenes_misma_altura(img_raza, img_clase, alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(img_combinada))
     
     username = ctx.author.name
@@ -143,7 +143,7 @@ async def cambiar_raza(ctx, numero: int):
     else:
         await database.update_user(ctx.author.id, {"race": raza, "coins": new_coins})
         await ctx.send(obtener_dialogo("cambiar_raza_exito", user=ctx.author.mention, raza=raza, coins=new_coins))
-        imagen_raza = redimensionar_por_alto(obtener_imagen_raza(raza), alto=90)
+        imagen_raza = redimensionar_por_alto(obtener_imagen_raza(raza), alto=IMAGE_HEIGHT)
         await ctx.send(file=discord.File(imagen_raza))
 
 @bot.command(name="cambiar_clase")
@@ -172,7 +172,7 @@ async def cambiar_clase(ctx, letra: str):
     else:
         await database.update_user(ctx.author.id, {"class": clase, "coins": new_coins})
         await ctx.send(obtener_dialogo("cambiar_clase_exito", user=ctx.author.mention, clase=clase, coins=new_coins))
-        imagen_clase = redimensionar_por_alto(obtener_imagen_clase(clase), alto=90)
+        imagen_clase = redimensionar_por_alto(obtener_imagen_clase(clase), alto=IMAGE_HEIGHT)
         await ctx.send(file=discord.File(imagen_clase))
 
 @bot.command(name="perfil")
@@ -203,7 +203,7 @@ async def perfil(ctx):
     # Imágenes raza y clase
     imagen_raza = obtener_imagen_raza(raza)
     imagen_clase = obtener_imagen_clase(clase)
-    ruta_combinada = combinar_imagenes_misma_altura(imagen_raza, imagen_clase, alto=90)
+    ruta_combinada = combinar_imagenes_misma_altura(imagen_raza, imagen_clase, alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(ruta_combinada))
 
     if inventory:
@@ -245,11 +245,11 @@ async def duelo(ctx, oponente: discord.Member):
     raza_oponente = rival.get("race")
 
     # Imágenes duelo
-    img_retador = redimensionar_por_alto(obtener_imagen_raza(raza_retador), alto=90)
-    img_versus = redimensionar_por_alto("assets/duelo_versus.png", alto=90)
-    img_oponente = redimensionar_por_alto(obtener_imagen_raza(raza_oponente), alto=90)
+    img_retador = redimensionar_por_alto(obtener_imagen_raza(raza_retador), alto=IMAGE_HEIGHT)
+    img_versus = redimensionar_por_alto("assets/duelo_versus.png", alto=IMAGE_HEIGHT)
+    img_oponente = redimensionar_por_alto(obtener_imagen_raza(raza_oponente), alto=IMAGE_HEIGHT)
 
-    ruta_combinada = combinar_tres_horizontal(img_retador, img_versus, img_oponente, alto=90)
+    ruta_combinada = combinar_tres_horizontal(img_retador, img_versus, img_oponente, alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(ruta_combinada))
     
 
@@ -341,7 +341,7 @@ async def mostrar_tienda(ctx):
     for i, obj in enumerate(OBJETOS_TIENDA, 1):
         mensaje += f"{i}. **{obj['nombre']}** (§{obj['precio']}): {obj['descripcion']}\n"
     mensaje += "\nUsa `!comprar <número>` para adquirir un objeto."
-    imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=90)
+    imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(imagen_mercader))
     await ctx.send(mensaje)
 
@@ -357,13 +357,13 @@ async def comprar_objeto(ctx, numero: int):
     objeto = OBJETOS_TIENDA[numero - 1]
     inventario = user.get("inventory", [])
     if objeto["nombre"] in inventario:
-        imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=90)
+        imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=IMAGE_HEIGHT)
         await ctx.send(file=discord.File(imagen_mercader))
         await ctx.send(f"Ya tienes un **{objeto['nombre']}** en tu inventario. Apacigua tu codicia.")
         return
     coins = user.get("coins", 0)
     if coins < objeto["precio"]:
-        imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=90)
+        imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=IMAGE_HEIGHT)
         await ctx.send(file=discord.File(imagen_mercader))
         await ctx.send(obtener_dialogo("compra_fallo", user=ctx.author.mention))
         return
@@ -372,7 +372,7 @@ async def comprar_objeto(ctx, numero: int):
         "coins": coins - objeto["precio"],
         "inventory": nuevo_inventario
     })
-    imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=90)
+    imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(imagen_mercader))
     await ctx.send(
         obtener_dialogo("compra_exito", user=ctx.author.mention, objeto=objeto["nombre"])
