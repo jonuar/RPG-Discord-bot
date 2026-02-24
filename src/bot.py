@@ -138,6 +138,8 @@ async def cambiar_raza(ctx, numero: int):
     else:
         await database.update_user(ctx.author.id, {"race": raza, "coins": new_coins})
         await ctx.send(obtener_dialogo("cambiar_raza_exito", user=ctx.author.mention, raza=raza, coins=new_coins))
+        imagen_raza = redimensionar_por_alto(obtener_imagen_raza(raza), alto=90)
+        await ctx.send(file=discord.File(imagen_raza))
 
 @bot.command(name="cambiar_clase")
 async def cambiar_clase(ctx, letra: str):
@@ -165,6 +167,8 @@ async def cambiar_clase(ctx, letra: str):
     else:
         await database.update_user(ctx.author.id, {"class": clase, "coins": new_coins})
         await ctx.send(obtener_dialogo("cambiar_clase_exito", user=ctx.author.mention, clase=clase, coins=new_coins))
+        imagen_clase = redimensionar_por_alto(obtener_imagen_clase(clase), alto=90)
+        await ctx.send(file=discord.File(imagen_clase))
 
 @bot.command(name="perfil")
 async def perfil(ctx):
