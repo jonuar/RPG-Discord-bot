@@ -4,7 +4,7 @@ from db import get_database
 from config import Config
 import random
 from dialogs import obtener_dialogo
-from assets_utils import obtener_imagen_raza, obtener_imagen_clase
+from assets_utils import obtener_imagen_raza, obtener_imagen_clase, combinar_imagenes_misma_altura
 
 
 
@@ -191,6 +191,12 @@ async def perfil(ctx):
         coins=coins
     )
 
+    # Imágenes raza y clase
+    imagen_raza = obtener_imagen_raza(raza)
+    imagen_clase = obtener_imagen_clase(clase)
+    ruta_combinada = combinar_imagenes_misma_altura(imagen_raza, imagen_clase, alto=90)
+    await ctx.send(file=discord.File(ruta_combinada))
+
     if inventory:
         await ctx.send(obtener_dialogo(
             "perfil",
@@ -202,11 +208,6 @@ async def perfil(ctx):
         ))
     else:
         await ctx.send(inventario_str)
-    print(raza)
-    imagen_raza = obtener_imagen_raza(raza)
-    imagen_clase = obtener_imagen_clase(clase)
-    await ctx.send(file=discord.File(imagen_raza))
-    await ctx.send(file=discord.File(imagen_clase))
 
 @bot.command(name="duelo")
 async def duelo(ctx, oponente: discord.Member):
@@ -378,5 +379,4 @@ async def aplicar_objeto_duelo(ctx, user, oponente_db, dado_user, dado_oponente,
         mensaje = obtener_dialogo("duelo_objeto_pizza_yogur", user=ctx.author.mention)
     return efecto, mensaje
 
-print("LOCAL DEV")
 bot.run(DISCORD_TOKEN)
