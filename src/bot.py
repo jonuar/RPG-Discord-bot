@@ -105,6 +105,11 @@ async def elegir(ctx, opcion: str):
     clase = CLASSES[clase_idx]
     raza = RACES[raza_idx]
 
+    img_raza = redimensionar_por_alto(obtener_imagen_raza(raza), alto=90)
+    img_clase = redimensionar_por_alto(obtener_imagen_clase(clase), alto=90)
+    img_combinada = combinar_imagenes_misma_altura(img_raza, img_clase, alto=90)
+    await ctx.send(file=discord.File(img_combinada))
+    
     username = ctx.author.name
     await database.create_user(ctx.author.id, username=username, race=raza, user_class=clase)
     await ctx.send(
