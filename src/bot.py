@@ -4,6 +4,7 @@ from db import get_database
 from config import Config
 import random
 from dialogs import obtener_dialogo
+from assets_utils import obtener_imagen_raza, obtener_imagen_clase
 
 
 
@@ -109,7 +110,7 @@ async def elegir(ctx, opcion: str):
     await ctx.send(
         f"{ctx.author.mention}, los dioses te vigilan mientras eliges:\n"
         f"Raza: **{raza}**\nClase: **{clase}**\n"
-        f"Se te otorga un tributo celestial por **§1000** monedas\n"
+        f"Se te ha otorgado un tributo celestial por **§1000** monedas\n"
         "Tu destino está sellado... por ahora."
     )
 
@@ -201,6 +202,11 @@ async def perfil(ctx):
         ))
     else:
         await ctx.send(inventario_str)
+    print(raza)
+    imagen_raza = obtener_imagen_raza(raza)
+    imagen_clase = obtener_imagen_clase(clase)
+    await ctx.send(file=discord.File(imagen_raza))
+    await ctx.send(file=discord.File(imagen_clase))
 
 @bot.command(name="duelo")
 async def duelo(ctx, oponente: discord.Member):
