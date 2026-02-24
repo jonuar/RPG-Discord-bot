@@ -65,9 +65,9 @@ DIALOGOS = {
         "Eres un alma errante sin propósito.\nCrea tu perfil con !elegir y abraza el sufrimiento."
     ],
     "perfil": [
-        "Eres un **{raza}** y formas parte del gremio de los **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas\nInventario: {inventario}.",
+        "{user}, eres un **{raza}** y formas parte del gremio de los **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas\nInventario: {inventario}.",
         "{user}, tu linaje es **{raza}** y perteneces al gremio de los **{clase}**.\nTus riquezas suman **§{coins}** monedas\nInventario: {inventario}.",
-        "Como buen **{raza}** del gremio de los **{clase}**, llevas **§{coins}** monedas en la bolsa.\nInventario: {inventario}."
+        "{user}, como buen **{raza}** del gremio de los **{clase}**, llevas **§{coins}** monedas en la bolsa.\nInventario: {inventario}."
     ],
     "perfil_inventario_vacio": [
         "Eres un **{raza}** del gremio de los **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas,\npero tu inventario está tan vacío como tus esperanzas.",
