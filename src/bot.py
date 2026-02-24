@@ -4,7 +4,7 @@ from db import get_database
 from config import Config
 import random
 from dialogs import obtener_dialogo
-from assets_utils import obtener_imagen_raza, obtener_imagen_clase, combinar_imagenes_misma_altura
+from assets_utils import obtener_imagen_raza, obtener_imagen_clase, combinar_imagenes_misma_altura, redimensionar_por_alto
 
 
 
@@ -315,11 +315,13 @@ async def duelo(ctx, oponente: discord.Member):
 
 @bot.command(name="tienda")
 async def mostrar_tienda(ctx):
-    intro = obtener_dialogo("tienda_intro")
+    intro = obtener_dialogo("tienda_intro", user=ctx.author.mention)
     mensaje = f"{intro}\n\n"
     for i, obj in enumerate(OBJETOS_TIENDA, 1):
         mensaje += f"{i}. **{obj['nombre']}** (§{obj['precio']}): {obj['descripcion']}\n"
     mensaje += "\nUsa `!comprar <número>` para adquirir un objeto."
+    imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=90)
+    await ctx.send(file=discord.File(imagen_mercader))
     await ctx.send(mensaje)
 
 @bot.command(name="comprar")
@@ -334,18 +336,27 @@ async def comprar_objeto(ctx, numero: int):
     objeto = OBJETOS_TIENDA[numero - 1]
     inventario = user.get("inventory", [])
     if objeto["nombre"] in inventario:
+        imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=90)
+        await ctx.send(file=discord.File(imagen_mercader))
         await ctx.send(f"Ya tienes un **{objeto['nombre']}** en tu inventario. Apacigua tu codicia.")
         return
     coins = user.get("coins", 0)
     if coins < objeto["precio"]:
-        await ctx.send(obtener_dialogo("compra_fallo"))
+        imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=90)
+        await ctx.send(file=discord.File(imagen_mercader))
+        await ctx.send(obtener_dialogo("compra_fallo", user=ctx.author.mention))
         return
     nuevo_inventario = inventario + [objeto["nombre"]]
     await database.update_user(ctx.author.id, {
         "coins": coins - objeto["precio"],
         "inventory": nuevo_inventario
     })
-    await ctx.send(obtener_dialogo("compra_exito", objeto=objeto["nombre"]))
+    imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=90)
+    await ctx.send(file=discord.File(imagen_mercader))
+    await ctx.send(
+        obtener_dialogo("compra_exito", user=ctx.author.mention, objeto=objeto["nombre"])
+    )
+
 
 # Uso de objetos en duelo
 async def aplicar_objeto_duelo(ctx, user, oponente_db, dado_user, dado_oponente, oponente_member):

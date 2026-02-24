@@ -33,11 +33,11 @@ def combinar_imagenes_misma_altura(ruta1, ruta2, alto):
     nueva.save(nueva_ruta)
     return nueva_ruta
 
-# def redimensionar_por_alto(ruta, alto=100):
-#     img = Image.open(ruta)
-#     proporcion = alto / img.height
-#     ancho = int(img.width * proporcion)
-#     img = img.resize((ancho, alto))
-#     nueva_ruta = f"temp_{ruta.replace('/', '_')}"
-#     img.save(nueva_ruta)
-#     return nueva_ruta
+def redimensionar_por_alto(ruta, alto=100):
+    img = Image.open(ruta)
+    proporcion = alto / img.height
+    ancho = int(img.width * proporcion)
+    img = img.resize((ancho, alto))
+    nueva_ruta = f"temp_{ruta.replace('/', '_')}"
+    img.save(nueva_ruta)
+    return nueva_ruta
