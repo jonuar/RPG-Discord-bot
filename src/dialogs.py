@@ -65,14 +65,14 @@ DIALOGOS = {
         "Eres un alma errante sin propósito.\nCrea tu perfil con !elegir y abraza el sufrimiento."
     ],
     "perfil": [
-        "{user}, eres un **{raza}** y formas parte del gremio de los **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas\nInventario: {inventario}.",
-        "{user}, tu linaje es **{raza}** y perteneces al gremio de los **{clase}**.\nTus riquezas suman **§{coins}** monedas\nInventario: {inventario}.",
-        "{user}, como buen **{raza}** del gremio de los **{clase}**, llevas **§{coins}** monedas en la bolsa.\nInventario: {inventario}."
+        "{user}, eres un **{raza}** y formas parte del gremio **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas\nInventario: {inventario}.",
+        "{user}, tu linaje es **{raza}** y perteneces al gremio **{clase}**.\nTus riquezas suman **§{coins}** monedas\nInventario: {inventario}.",
+        "{user}, como buen **{raza}** del gremio **{clase}**, llevas **§{coins}** monedas en la bolsa.\nInventario: {inventario}."
     ],
     "perfil_inventario_vacio": [
-        "Eres un **{raza}** del gremio de los **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas,\npero tu inventario está tan vacío como tus esperanzas.",
-        "{user}, tu linaje es **{raza}** y perteneces al gremio de los **{clase}**.\nTus riquezas suman **§{coins}** monedas,\npero tu inventario no tiene nada digno de mencionar.",
-        "Como buen **{raza}** del gremio de los **{clase}**, llevas **§{coins}** monedas en la bolsa,\ny un inventario tan vacío que hasta los ladrones lo ignoran."
+        "Eres un **{raza}** del gremio **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas,\npero tu inventario está tan vacío como tus esperanzas.",
+        "{user}, tu linaje es **{raza}** y perteneces al gremio **{clase}**.\nTus riquezas suman **§{coins}** monedas,\npero tu inventario no tiene nada digno de mencionar.",
+        "Como buen **{raza}** del gremio **{clase}**, llevas **§{coins}** monedas en la bolsa,\ny un inventario tan vacío que hasta los ladrones lo ignoran."
     ],
     "elegir_exito": [
         "{user}, los dioses se ríen mientras eliges:\nRaza: **{raza}**\nClase: **{clase}**\nTu destino está sellado... por ahora.",
