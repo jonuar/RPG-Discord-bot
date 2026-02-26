@@ -14,7 +14,7 @@ Prepárate para perder monedas, cambiar de raza, retar a tus amigos y comprar ex
 Sprites de personajes por raza utilizados para selección, previsualización y generación de imágenes en comandos del bot.
 
 <p align="center">
-  <img src="assets/characters.png" alt="RPGbot character sprites" width="500">
+  <img src="assets/characters.jpg" alt="RPGbot character sprites" width="500">
 </p>
 
 ---
