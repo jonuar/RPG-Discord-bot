@@ -25,9 +25,9 @@ CLASSES = [
 database = get_database()
 
 OBJETOS_TIENDA = [
-    {"nombre": "Elixir de la Bruma 🏺", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
-    {"nombre": "Hongo del Abismo 🍄", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, ambos pierden §100 monedas."},
-    {"nombre": "Pizza con yogur 🍕", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
+    {"nombre": "🏺 Elixir de la Bruma", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
+    {"nombre": "🍄 Hongo del Abismo", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, ambos pierden §100 monedas."},
+    {"nombre": "🍕 Pizza con yogur", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
 ]
 
 OBJETOS_ESPECIALES = [obj["nombre"] for obj in OBJETOS_TIENDA]
@@ -38,7 +38,7 @@ PRECIO_CAMBIO = 200
 @bot.command(name="info")
 async def info(ctx):
     mensaje = (
-        "**Comandos principalesLOCAL DEV:**\n"
+        "**Comandos principales:**\n"
         "`!razas` y `!clases` - Consulta las opciones disponibles.\n"
         "`!elegir <número><letra>` - Crea tu perfil eligiendo raza y clase.\n"
         "`!perfil` - Muestra tu perfil actual.\n"
@@ -220,8 +220,11 @@ async def perfil(ctx):
 
 @bot.command(name="duelo")
 async def duelo(ctx, oponente: discord.Member):
+    if oponente.id == bot.user.id:
+        await ctx.send(f"{ctx.author.mention}, ¿Tu osadía es fascinante, aventurero, pero todo en este mundo obedece a mi voluntad. Un simple aventurero que cree poder dictar las reglas del mundo que yo mismo he tejido. ¿Acaso no ves que cada piedra, cada sombra y cada monstruo obedece a mi voluntad? Aprende, mortal, que desafiarme es invocar tu propia condena.")
+        return
     if oponente.id == ctx.author.id:
-        await ctx.send("¿Te has mirado al espejo últimamente? No puedes batirte en duelo contigo mismo, aunque sería divertido verte perder.")
+        await ctx.send("¿Puede alguien ser más denso que un slime?. No puedes batirte en duelo contigo mismo, aunque sería divertido verte perder. Busca un verdadero oponente.")
         return
 
     jugador = await database.read_user(ctx.author.id)
