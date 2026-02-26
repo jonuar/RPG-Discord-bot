@@ -7,7 +7,11 @@ import random
 from dialogs import obtener_dialogo
 from assets_utils import combinar_tres_horizontal, obtener_imagen_raza, obtener_imagen_clase, combinar_imagenes_misma_altura, redimensionar_por_alto
 
-
+'''
+TO DO:
+-Error Handling
+-Testing
+'''
 
 DISCORD_TOKEN = Config.DISCORD_TOKEN
 
@@ -41,7 +45,7 @@ async def info(ctx):
     mensaje = (
         "**Comandos principales:**\n"
         "`!razas` y `!clases` - Consulta las opciones disponibles.\n"
-        "`!elegir <número><letra>` - Crea tu perfil eligiendo raza y clase.\n"
+        "`!elegir <número de raza><letra de clase>` - Crea tu perfil eligiendo raza y clase.\n"
         "`!perfil` - Muestra tu perfil actual.\n"
         "`!duelo @usuario` - Reta a otro retador a un duelo.\n"
         f"`!cambiar_raza <número>` - Cambia tu raza por un precio.\n"
@@ -84,7 +88,7 @@ async def elegir(ctx, opcion: str):
         await ctx.send("Ya tienes un perfil. Si quieres cambiar de raza o clase, usa `!cambiar_raza` o `!cambiar_clase`.")
         return
     if len(opcion) < 2:
-        await ctx.send("¿Intentas engañar al destino? Usa el formato correcto, mortal: `!elegir 1C`.")
+        await ctx.send("¿Intentas engañar al destino? Usa el formato correcto, mortal: `!elegir <número de raza><letra de clase>`.")
         return
 
     raza_idx = opcion[0]
@@ -186,7 +190,7 @@ async def perfil(ctx):
         await database.delete_user(ctx.author.id)
         await ctx.send(
             f"{ctx.author.mention}, tu alma ha sido reclamada por la pobreza. "
-            "Tu perfil ha sido eliminado. Usa `!elegir` para renacer."
+            "Tu perfil ha sido eliminado. Usa `!elegir <número de raza><letra de clase>` para renacer."
         )
         return
     raza = user.get("race", "No elegida")
@@ -245,14 +249,14 @@ async def duelo(ctx, oponente: discord.Member):
                 await database.delete_user(ctx.author.id)
                 await ctx.send(
                     f"{ctx.author.mention} ha perdido toda su fortuna y su historia se disuelve en el olvido perpetuo."
-                    "Crea un nuevo personaje con `!elegir`."
+                    "Crea un nuevo personaje con `!elegir <número de raza><letra de clase>`."
                 )
         return
 
     if not rival:
         await ctx.send(
-            f"Tu rival debe tener su destino escrito en el grimorio (`!elegir`). "
-            f"{oponente.mention}, deja de esconderte y crea tu personaje antes de enfrentar tu inevitable derrota."
+            f"Tu rival debe tener su destino escrito en el grimorio. "
+            f"{oponente.mention}, deja de esconderte y crea tu personaje antes de enfrentar tu inevitable derrota.\nRenace con `!elegir <número de raza><letra de clase>`"
         )
         return
 
@@ -343,7 +347,7 @@ async def duelo(ctx, oponente: discord.Member):
                 await database.delete_user(ctx.author.id)
                 resultado += (
                     f"\n{ctx.author.mention}, tus arcas se vaciaron en un suspiro, y tu nombre fue borrado de los pergaminos del tiempo."
-                    "Deberá crear un nuevo perfil con `!elegir`."
+                    "Deberá crear un nuevo perfil con `!elegir <número de raza><letra de clase>`."
                 )
                 return
             else:
@@ -383,7 +387,7 @@ async def mostrar_tienda(ctx):
 async def comprar_objeto(ctx, numero: int):
     user = await database.read_user(ctx.author.id)
     if not user:
-        await ctx.send("Debes tener un perfil antes de comprar. Usa `!elegir` para crearlo.")
+        await ctx.send("Debes tener un perfil antes de comprar. Usa `!elegir <número de raza><letra de clase>` para crearlo.")
         return
     if numero < 1 or numero > len(OBJETOS_TIENDA):
         await ctx.send("Ese objeto no existe en la tienda. Usa `!tienda` para ver las opciones.")

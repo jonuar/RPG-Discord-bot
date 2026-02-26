@@ -60,9 +60,9 @@ DIALOGOS = {
         "Sin monedas, sin alma, sin futuro.\n{muerto} debe empezar de nuevo si quiere volver a sufrir."
     ],
     "perfil_vacio": [
-        "Tu existencia es tan vacía como tu perfil.\nUsa !elegir para comenzar tu trágica aventura.",
-        "No tienes historia, no tienes gloria.\nUsa !elegir y acepta tu destino.",
-        "Eres un alma errante sin propósito.\nCrea tu perfil con !elegir y abraza el sufrimiento."
+        "Tu existencia es tan vacía como tu perfil.\nUsa `!elegir <número de raza><letra de clase>` para comenzar tu trágica aventura.",
+        "No tienes historia, no tienes gloria.\nUsa `!elegir <número de raza><letra de clase>` y acepta tu destino.",
+        "Eres un alma errante sin propósito.\nCrea tu perfil con `!elegir <número de raza><letra de clase>` y abraza el sufrimiento."
     ],
     "perfil": [
         "{user}, eres un **{raza}** y formas parte del gremio **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas\nInventario: {inventario}.",
