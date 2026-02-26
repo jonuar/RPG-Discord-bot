@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import MemberNotFound, CommandInvokeError
 from db import get_database
 from config import Config
 import random
@@ -42,7 +43,7 @@ async def info(ctx):
         "`!razas` y `!clases` - Consulta las opciones disponibles.\n"
         "`!elegir <número><letra>` - Crea tu perfil eligiendo raza y clase.\n"
         "`!perfil` - Muestra tu perfil actual.\n"
-        "`!duelo @usuario` - Reta a otro jugador a un duelo.\n"
+        "`!duelo @usuario` - Reta a otro retador a un duelo.\n"
         f"`!cambiar_raza <número>` - Cambia tu raza por un precio.\n"
         f"`!cambiar_clase <letra>` - Cambia tu clase por un precio.\n"
         "`!tienda` - Muestra los objetos que puedes comprar al mercader.\n"
@@ -220,31 +221,53 @@ async def perfil(ctx):
 
 @bot.command(name="duelo")
 async def duelo(ctx, oponente: discord.Member):
-    if oponente.id == bot.user.id:
-        await ctx.send(f"{ctx.author.mention}, ¿Tu osadía es fascinante, aventurero, pero todo en este mundo obedece a mi voluntad. Un simple aventurero que cree poder dictar las reglas del mundo que yo mismo he tejido. ¿Acaso no ves que cada piedra, cada sombra y cada monstruo obedece a mi voluntad? Aprende, mortal, que desafiarme es invocar tu propia condena.")
-        return
-    if oponente.id == ctx.author.id:
-        await ctx.send("¿Puede alguien ser más denso que un slime?. No puedes batirte en duelo contigo mismo, aunque sería divertido verte perder. Busca un verdadero oponente.")
-        return
 
-    jugador = await database.read_user(ctx.author.id)
+    retador = await database.read_user(ctx.author.id)
     rival = await database.read_user(oponente.id)
+    print(f"RETADOR: {retador}")
+    print(f"RIVAL: {rival}")
 
-    if not jugador or not rival:
+    if not retador:
         await ctx.send(
-            f"Ambos aventureros deben tener un destino escrito en el grimorio (`!elegir`). "
+            f"No puedes desafiar a nadie, porque no eres más que un eco inexistente..\n"
+            f"El tiempo de esconderse terminó. Crea tu personaje antes de enfrentar tu inevitable derrota.\n Usa `!elegir <número><letra>`"
+        )
+        return
+
+    if oponente.id == bot.user.id:
+        if retador and retador.get("coins", 0) >= 100:
+            await ctx.send(f"{ctx.author.mention}, ¿Tu osadía es fascinante, aventurero, pero todo en este mundo obedece a mi voluntad.\nUn simple aventurero que cree poder dictar las reglas del mundo que yo mismo he tejido.\n¿Acaso no ves que cada piedra, cada sombra y cada monstruo obedece a mi voluntad?\nAprende, mortal, que desafiarme es invocar tu propia condena.")
+            await database.update_user(ctx.author.id, {"coins": retador["coins"] - 200})
+            await ctx.send("- Un hechizo cae sobre ti y tu fortuna se desvanece: **§200 monedas desaparecen de tu alforja**")
+
+            retador_actualizado = await database.read_user(ctx.author.id)
+            if retador_actualizado.get("coins", 0) <= 0:
+                await database.delete_user(ctx.author.id)
+                await ctx.send(
+                    f"{ctx.author.mention} ha perdido toda su fortuna y su historia se disuelve en el olvido perpetuo."
+                    "Crea un nuevo personaje con `!elegir`."
+                )
+        return
+
+    if not rival:
+        await ctx.send(
+            f"Tu rival debe tener su destino escrito en el grimorio (`!elegir`). "
             f"{oponente.mention}, deja de esconderte y crea tu personaje antes de enfrentar tu inevitable derrota."
         )
         return
 
-    if jugador.get("coins", 0) < 100 or rival.get("coins", 0) < 100:
+    if oponente.id == retador["user_id"]:
+        await ctx.send("¿Puede alguien ser más denso que un slime? No puedes batirte en duelo contigo mismo, aunque sería divertido verte perder. Busca un verdadero oponente.")
+        return
+
+    if retador.get("coins", 0) < 100 or rival.get("coins", 0) < 100:
         await ctx.send(
             "Ambos deben tener al menos §100 monedas para arriesgar en este duelo. "
             "Sin oro, solo les queda pelear por migajas... o por su dignidad."
         )
         return
     
-    raza_retador = jugador.get("race")
+    raza_retador = retador.get("race")
     raza_oponente = rival.get("race")
 
     # Imágenes duelo
@@ -261,7 +284,7 @@ async def duelo(ctx, oponente: discord.Member):
 
     # Aplica el objeto especial (si existe) y recibe el efecto y mensaje
     efecto, mensaje_objeto = await aplicar_objeto_duelo(
-        ctx, jugador, rival, dado_jugador, dado_rival, oponente
+        ctx, retador, rival, dado_jugador, dado_rival, oponente
     )
 
     # Construye el resultado base
@@ -274,8 +297,8 @@ async def duelo(ctx, oponente: discord.Member):
         resultado += mensaje_objeto + "\n"
 
     if dado_jugador > dado_rival:
-        # El jugador gana el duelo
-        saldo_previo = jugador["coins"]
+        # El retador gana el duelo
+        saldo_previo = retador["coins"]
         if efecto == "pizza_yogur":
             ganancia = 100 * 3
             saldo_final = saldo_previo + ganancia
@@ -294,16 +317,16 @@ async def duelo(ctx, oponente: discord.Member):
         return
     elif dado_rival > dado_jugador:
         if efecto == "elixir_bruma":
-            # El jugador NO pierde monedas
-            await database.update_user(ctx.author.id, {"coins": jugador["coins"]})
+            # El retador NO pierde monedas
+            await database.update_user(ctx.author.id, {"coins": retador["coins"]})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
             #resultado += mensaje_objeto
             await ctx.send(resultado)
             return
         elif efecto == "hongo_abismo":
-            coins_jugador = max(1, jugador["coins"] - 100)
+            coins_jugador = max(1, retador["coins"] - 100)
             coins_oponente = max(1, rival["coins"] - 100)
-            # El jugador pierde monedas normalmente
+            # El retador pierde monedas normalmente
             await database.update_user(ctx.author.id, {"coins": coins_jugador})
             # El oponente pierde 100 monedas extra (pero no menos de 1)
             await database.update_user(oponente.id, {"coins": coins_oponente})
@@ -311,17 +334,18 @@ async def duelo(ctx, oponente: discord.Member):
             return
         else:
             # Lógica normal
-            await database.update_user(ctx.author.id, {"coins": jugador["coins"] - 100})
+            await database.update_user(ctx.author.id, {"coins": retador["coins"] - 100})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
-            nuevo_saldo = jugador["coins"] - 100
+            nuevo_saldo = retador["coins"] - 100
             await database.update_user(ctx.author.id, {"coins": nuevo_saldo})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
             if nuevo_saldo <= 0:
                 await database.delete_user(ctx.author.id)
                 resultado += (
-                    f"\n{ctx.author.mention} ha perdido todas sus monedas y ha sido borrado de la historia. "
+                    f"\n{ctx.author.mention}, tus arcas se vaciaron en un suspiro, y tu nombre fue borrado de los pergaminos del tiempo."
                     "Deberá crear un nuevo perfil con `!elegir`."
                 )
+                return
             else:
                 resultado += (
                     f"¡{oponente.mention} se alza victorioso y roba §100 monedas! "
@@ -336,6 +360,13 @@ async def duelo(ctx, oponente: discord.Member):
         )
 
         await ctx.send(resultado)
+
+@duelo.error
+async def duelo_error(ctx, error):
+    if isinstance(error, MemberNotFound):
+        await ctx.send("¡Intentaste batirte en duelo con un fantasma! Ese usuario no existe en este servidor o no lo mencionaste correctamente. Usa `!duelo @usuario`.")
+    else:
+        await ctx.send("Algo salió mal en el duelo. Los dioses del código están confundidos.")
 
 @bot.command(name="tienda")
 async def mostrar_tienda(ctx):
