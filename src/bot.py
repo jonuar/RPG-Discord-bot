@@ -53,7 +53,7 @@ async def info(ctx):
         f"`!cambiar_clase <letra>` - Cambia tu clase por un precio.\n"
         "`!tienda` - Muestra los objetos que puedes comprar al mercader.\n"
         "`!comprar <número>` - Compra un objeto de la tienda para tu inventario.\n"
-        "`!rank` - Muestra el top 5 de los jugadores con más monedas.\n"
+        "`!top` - Muestra el top 5 de los jugadores con más monedas.\n"
         "\n"
         "**Reglas y mecánicas:**\n"
         f"- Cambiar de raza o clase cuesta {PRECIO_CAMBIO} monedas.\n"
@@ -456,8 +456,8 @@ async def comprar_objeto(ctx, numero: int):
         obtener_dialogo("compra_exito", user=ctx.author.mention, objeto=f"{objeto['emoji']} {objeto['nombre']}")
     )
 
-@bot.command(name="rank")
-async def rank(ctx, top: int = 3):
+@bot.command(name="top")
+async def top(ctx, top: int = 3):
     # Obtén todos los usuarios de la base de datos
     usuarios = await database.get_all_users()  # Debes implementar este método si no existe
     if not usuarios:
