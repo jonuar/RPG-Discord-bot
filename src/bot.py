@@ -210,16 +210,20 @@ async def perfil(ctx):
     clase = user.get("class", "No elegida")
     coins = user.get("coins", 0)
     inventory = user.get("inventory", [])
-    # Añade emojis al inventario
-    inventario_str = ', '.join(
-        f"{next((obj['emoji'] for obj in OBJETOS_TIENDA if obj['nombre'] == item), '')} {item}" for item in inventory
-    ) if inventory else obtener_dialogo(
-        "perfil_inventario_vacio",
-        user=ctx.author.mention,
-        raza=raza,
-        clase=clase,
-        coins=coins
-    )
+    # Añade emojis al inventario y muestra cada objeto en una línea
+    if inventory:
+        inventario_str = "\n" + "\n".join(
+        f"- {next((obj['emoji'] for obj in OBJETOS_TIENDA if obj['nombre'] == item), '')} {item}"
+        for item in inventory
+        )
+    else:
+        inventario_str = obtener_dialogo(
+            "perfil_inventario_vacio",
+            user=ctx.author.mention,
+            raza=raza,
+            clase=clase,
+            coins=coins
+        )
 
     # Imágenes raza y clase
     imagen_raza = obtener_imagen_raza(raza)
