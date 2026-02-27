@@ -6,6 +6,7 @@ from config import Config
 import random
 from dialogs import obtener_dialogo
 from assets_utils import combinar_tres_horizontal, obtener_imagen_raza, obtener_imagen_clase, combinar_imagenes_misma_altura, redimensionar_por_alto
+import re
 
 '''
 TO DO:
@@ -86,19 +87,29 @@ async def listar_clases(ctx):
 
 @bot.command(name="elegir")
 async def elegir(ctx, opcion: str):
+    # Verifica si el usuario ya tiene un perfil creado
     user = await database.read_user(ctx.author.id)
     if user:
         await ctx.send("Ya tienes un perfil. Si quieres cambiar de raza o clase, usa `!cambiar_raza` o `!cambiar_clase`.")
         return
-    if len(opcion) < 2:
-        await ctx.send("¿Intentas engañar al destino? Usa el formato correcto, mortal: `!elegir <número de raza><letra de clase>`.")
+
+    # Usa regex para separar el número de raza (uno o más dígitos) y la letra de clase
+    match = re.match(r"^(\d+)([A-Za-z])$", opcion)
+    if not match:
+        # Si el formato es incorrecto, muestra un mensaje de ayuda
+        await ctx.send(
+            "Formato incorrecto. Usa `!elegir <número de raza><letra de clase>`, por ejemplo: `!elegir 10H`.\n"
+            "Consulta las razas con `!razas` y las clases con `!clases`."
+        )
         return
 
-    raza_idx = opcion[0]
-    clase_letra = opcion[1].upper()
+    # Extrae el número de raza y la letra de clase del input del usuario
+    raza_num = int(match.group(1))      # Número de raza (puede ser de más de un dígito)
+    clase_letra = match.group(2).upper()  # Letra de clase, convertida a mayúscula
+
 
     try:
-        raza_idx = int(raza_idx) - 1
+        raza_idx = raza_num - 1
         if raza_idx < 0 or raza_idx >= len(RACES):
             raise ValueError
     except ValueError:
