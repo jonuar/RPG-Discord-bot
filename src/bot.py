@@ -9,6 +9,7 @@ from assets_utils import combinar_tres_horizontal, obtener_imagen_raza, obtener_
 
 '''
 TO DO:
+-Short decription: classes/races
 -Error Handling
 -Testing
 '''
@@ -47,7 +48,7 @@ async def info(ctx):
         "`!razas` y `!clases` - Consulta las opciones disponibles.\n"
         "`!elegir <número de raza><letra de clase>` - Crea tu perfil eligiendo raza y clase.\n"
         "`!perfil` - Muestra tu perfil actual.\n"
-        "`!duelo @usuario` - Reta a otro retador a un duelo.\n"
+        "`!duelo @usuario` - Reta a otro aventurero a un duelo.\n"
         f"`!cambiar_raza <número>` - Cambia tu raza por un precio.\n"
         f"`!cambiar_clase <letra>` - Cambia tu clase por un precio.\n"
         "`!tienda` - Muestra los objetos que puedes comprar al mercader.\n"
@@ -61,6 +62,8 @@ async def info(ctx):
         "- Los objetos se usan automáticamente en los duelos si tienes alguno en tu inventario.\n"
         "- Si tienes más de un objeto especial en tu inventario, se usará uno de manera aleatoria en el duelo.\n"
         "- Solo puedes tener un ejemplar de cada objeto en tu inventario.**\n"
+        "- Recuerda, NUNCA retar al bot.**\n"
+
     )
     await ctx.send(mensaje)
 
@@ -77,7 +80,7 @@ async def listar_clases(ctx):
     letras = "ABCDEFGHIJ"
     clases_text = "\n".join([f"{letras[i]}. {clase}" for i, clase in enumerate(CLASSES)])
     await ctx.send(
-        f"Las sendas del infortunio te ofrecen estas clases:\n{clases_text}\n"
+        f"Las sendas del infortunio te ofrecen estas clases:\n\n{clases_text}\n"
         "\nRecuerda: ningún mago ha muerto de viejo, y ningún bárbaro ha muerto de sabio."
     )
 
@@ -233,7 +236,7 @@ async def duelo(ctx, oponente: discord.Member):
 
     if not retador:
         await ctx.send(
-            f"No puedes desafiar a nadie, porque no eres más que un eco inexistente..\n"
+            f"No puedes desafiar a nadie, porque no eres más que un eco inexistente.\n"
             f"El tiempo de esconderse terminó. Crea tu personaje antes de enfrentar tu inevitable derrota.\n Usa `!elegir <número><letra>`"
         )
         return
@@ -248,7 +251,7 @@ async def duelo(ctx, oponente: discord.Member):
             if retador_actualizado.get("coins", 0) <= 0:
                 await database.delete_user(ctx.author.id)
                 await ctx.send(
-                    f"{ctx.author.mention} ha perdido toda su fortuna y su historia se disuelve en el olvido perpetuo."
+                    f"{ctx.author.mention} ha perdido toda su fortuna y su historia se disuelve en el olvido perpetuo.\n"
                     "Crea un nuevo personaje con `!elegir <número de raza><letra de clase>`."
                 )
         return
@@ -261,7 +264,7 @@ async def duelo(ctx, oponente: discord.Member):
         return
 
     if oponente.id == retador["user_id"]:
-        await ctx.send("¿Puede alguien ser más denso que un slime? No puedes batirte en duelo contigo mismo, aunque sería divertido verte perder. Busca un verdadero oponente.")
+        await ctx.send(f"¿Puede alguien ser más denso que un slime? No puedes batirte en duelo contigo mismo, aunque sería divertido verte perder. {oponente.mention}, busca un verdadero oponente.")
         return
 
     if retador.get("coins", 0) < 100 or rival.get("coins", 0) < 100:
@@ -346,7 +349,7 @@ async def duelo(ctx, oponente: discord.Member):
             if nuevo_saldo <= 0:
                 await database.delete_user(ctx.author.id)
                 resultado += (
-                    f"\n{ctx.author.mention}, tus arcas se vaciaron en un suspiro, y tu nombre fue borrado de los pergaminos del tiempo."
+                    f"\n{ctx.author.mention}, tus arcas se vaciaron en un suspiro, y tu nombre fue borrado de los pergaminos del tiempo.\n"
                     "Deberá crear un nuevo perfil con `!elegir <número de raza><letra de clase>`."
                 )
                 return
