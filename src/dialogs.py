@@ -100,29 +100,29 @@ DIALOGOS = {
         "Un susurro metálico te rodea mientras **El Mercader** despliega su manto repleto de baratijas.\n\"Elige con cuidado, forastero. Cada objeto tiene su precio... y su consecuencia.\""
     ],
     "compra_exito": [
-        "\"Excelente elección...\", murmura **El Mercader** mientras te entrega el {objeto}.\n\"Que el destino te sea propicio... o al menos entretenido.\"",
-        "**El Mercader** sonríe con dientes dorados.\n\"{objeto} es tuyo. Recuerda: toda bendición es una maldición disfrazada.\"",
-        "Con un gesto ágil, **El Mercader** te pasa el {objeto}.\n\"No acepto devoluciones, ni almas rotas.\""
+        "\"Excelente elección...\", murmura **El Mercader** mientras te entrega el **{objeto}**.\n\"Que el destino te sea propicio... o al menos entretenido.\"",
+        "**El Mercader** sonríe con dientes dorados.\n\"**{objeto}** es tuyo. Recuerda: toda bendición es una maldición disfrazada.\"",
+        "Con un gesto ágil, **El Mercader** te pasa el **{objeto}**.\n\"No acepto devoluciones, ni almas rotas.\""
     ],
     "compra_fallo": [
         "\"No tienes suficiente oro para mis tesoros, pobre alma...\", se burla **El Mercader**.",
         "**El Mercader** sacude la cabeza.\n\"Vuelve cuando tu bolsa pese más que tus sueños rotos.\"",
-        "\"El oro abre puertas, la pobreza las cierra.\nVuelve cuando puedas pagar.\""
+        "\"El oro abre puertas, la pobreza las cierra.\n\"Vuelve cuando puedas pagar.\""
     ],
     "duelo_objeto_elixir_bruma": [
-        "{user} invoca el poder del **Elixir de la Bruma**. Una niebla misteriosa lo envuelve y ninguna moneda abandona su bolsa.",
-        "El **Elixir de la Bruma** protege a {user}, que sale ileso de la derrota, sin perder ni una sola moneda.",
-        "La bruma esmeralda rodea a {user}, evitando que el oro cambie de manos tras la derrota."
+        "{user} invoca el poder del **🏺 Elixir de la Bruma **. Una niebla misteriosa lo envuelve y ninguna moneda abandona su bolsa.",
+        "El **🏺 Elixir de la Bruma** protege a {user}, que sale ileso de la derrota, sin perder ni una sola moneda.",
+        "La **bruma** esmeralda rodea a {user}, evitando que el oro cambie de manos tras la derrota."
     ],
     "duelo_objeto_hongo_abismo": [
-        "{user} consume el **Hongo del Abismo 🍄**. Una sombra oscura envuelve la arena y ambos combatientes pierden §100 monedas.",
-        "El **Hongo del Abismo 🍄** libera su maldición: tanto {user} como {enemigo} sienten el peso de la derrota y pierden §100 monedas.",
-        "{user} sonríe sombríamente tras comer el hongo, y la desgracia cae sobre ambos: §100 monedas menos para cada uno."
+        "{user} consume el **🍄 Hongo del Abismo**. Una sombra oscura envuelve la arena y ambos combatientes pierden §100 monedas.",
+        "El **🍄 Hongo del Abismo** libera su maldición: tanto {user} como {enemigo} sienten el peso de la derrota y pierden §100 monedas.",
+        "{user} sonríe sombríamente tras comer el **hongo**, y la desgracia cae sobre ambos: §100 monedas menos para cada uno."
     ],
     "duelo_objeto_pizza_yogur": [
-        "{user} devora la **Pizza con yogur**. ¡Su fortuna se triplica ante la mirada incrédula de todos!",
-        "El poder de la **Pizza con yogur** multiplica la bolsa de {user} por tres. ¡La gula a veces paga!",
-        "{user} saborea la extraña pizza y el oro fluye como nunca antes: ¡bolsa triplicada!"
+        "{user} devora la **🍕 Pizza con yogur**. ¡Su fortuna se triplica ante la mirada incrédula de todos!",
+        "El poder de la **🍕 Pizza con yogur** multiplica la bolsa de {user} por tres. ¡La gula a veces paga!",
+        "{user} saborea la extraña **🍕 Pizza con yogur** y el oro fluye como nunca antes: ¡bolsa triplicada!"
     ],
 }
 

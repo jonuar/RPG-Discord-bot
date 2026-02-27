@@ -32,11 +32,10 @@ CLASSES = [
 database = get_database()
 
 OBJETOS_TIENDA = [
-    {"nombre": "🏺 Elixir de la Bruma", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
-    {"nombre": "🍄 Hongo del Abismo", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, ambos pierden §100 monedas."},
-    {"nombre": "🍕 Pizza con yogur", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
+    {"nombre": "Elixir de la Bruma", "emoji": "🏺", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
+    {"nombre": "Hongo del Abismo", "emoji": "🍄", "precio": 100, "descripcion": "Afecta a tu enemigo: si eres derrotado, ambos pierden §100 monedas."},
+    {"nombre": "Pizza con yogur", "emoji": "🍕", "precio": 200, "descripcion": "Multiplica tu bolsa: si ganas el duelo, tus monedas se multiplican por tres."}
 ]
-
 OBJETOS_ESPECIALES = [obj["nombre"] for obj in OBJETOS_TIENDA]
 IMAGE_HEIGHT = 120
 PRECIO_CAMBIO = 200
@@ -72,7 +71,7 @@ async def info(ctx):
 async def listar_razas(ctx):
     razas_text = "\n".join([f"{i+1}. {raza}" for i, raza in enumerate(RACES)])
     await ctx.send(
-        f"En el gran libro de los condenados, las razas disponibles son:\n{razas_text}\n"
+        f"En el gran libro de los condenados, las razas disponibles son:\n\n{razas_text}\n"
         "\nElige sabiamente... o no, igual el destino te alcanzará."
     )
 
@@ -113,7 +112,7 @@ async def elegir(ctx, opcion: str):
         if raza_idx < 0 or raza_idx >= len(RACES):
             raise ValueError
     except ValueError:
-        await ctx.send("Tu elección de raza es tan válida como un dragón vegetariano. Usa `!razas` para ver las opciones.")
+        await ctx.send("Tu elección de raza es tan absurda como un dragón vegetariano. Usa `!razas` para ver las opciones.")
         return
 
     letras = "ABCDEFGHIJ"
@@ -211,7 +210,10 @@ async def perfil(ctx):
     clase = user.get("class", "No elegida")
     coins = user.get("coins", 0)
     inventory = user.get("inventory", [])
-    inventario_str = ', '.join(inventory) if inventory else obtener_dialogo(
+    # Añade emojis al inventario
+    inventario_str = ', '.join(
+        f"{next((obj['emoji'] for obj in OBJETOS_TIENDA if obj['nombre'] == item), '')} {item}" for item in inventory
+    ) if inventory else obtener_dialogo(
         "perfil_inventario_vacio",
         user=ctx.author.mention,
         raza=raza,
@@ -242,8 +244,27 @@ async def duelo(ctx, oponente: discord.Member):
 
     retador = await database.read_user(ctx.author.id)
     rival = await database.read_user(oponente.id)
-    print(f"RETADOR: {retador}")
-    print(f"RIVAL: {rival}")
+    #     import re
+    
+    @bot.command(name="elegir")
+    async def elegir(ctx, opcion: str):
+        user = await database.read_user(ctx.author.id)
+        if user:
+            await ctx.send("Ya tienes un perfil. Si quieres cambiar de raza o clase, usa `!cambiar_raza` o `!cambiar_clase`.")
+            return
+    
+        match = re.match(r"^(\d+)([A-Za-z])$", opcion)
+        if not match:
+            await ctx.send(
+                "Formato incorrecto. Usa `!elegir <número de raza><letra de clase>`, por ejemplo: `!elegir 10H`.\n"
+                "Consulta las razas con `!razas` y las clases con `!clases`."
+            )
+            return
+    
+        raza_num = int(match.group(1))
+        clase_letra = match.group(2).upper()
+    
+        # ...continúa con la lógica de creación de perfil usando raza_num y clase_letra...
 
     if not retador:
         await ctx.send(
@@ -391,7 +412,7 @@ async def mostrar_tienda(ctx):
     intro = obtener_dialogo("tienda_intro", user=ctx.author.mention)
     mensaje = f"{intro}\n\n"
     for i, obj in enumerate(OBJETOS_TIENDA, 1):
-        mensaje += f"{i}. **{obj['nombre']}** (§{obj['precio']}): {obj['descripcion']}\n"
+        mensaje += f"{i}. **{obj['emoji']} {obj['nombre']}** (§{obj['precio']}): {obj['descripcion']}\n"
     mensaje += "\nUsa `!comprar <número>` para adquirir un objeto."
     imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(imagen_mercader))
@@ -411,7 +432,7 @@ async def comprar_objeto(ctx, numero: int):
     if objeto["nombre"] in inventario:
         imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=IMAGE_HEIGHT)
         await ctx.send(file=discord.File(imagen_mercader))
-        await ctx.send(f"Ya tienes un **{objeto['nombre']}** en tu inventario. Apacigua tu codicia.")
+        await ctx.send(f"Ya tienes un **{objeto['emoji']} {objeto['nombre']}** en tu inventario. Apacigua tu codicia.")
         return
     coins = user.get("coins", 0)
     if coins < objeto["precio"]:
@@ -427,40 +448,7 @@ async def comprar_objeto(ctx, numero: int):
     imagen_mercader = redimensionar_por_alto("assets/mercader.png", alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(imagen_mercader))
     await ctx.send(
-        obtener_dialogo("compra_exito", user=ctx.author.mention, objeto=objeto["nombre"])
+        obtener_dialogo("compra_exito", user=ctx.author.mention, objeto=f"{objeto['emoji']} {objeto['nombre']}")
     )
-
-
-# Uso de objetos en duelo
-async def aplicar_objeto_duelo(ctx, user, oponente_db, dado_user, dado_oponente, oponente_member):
-    inventario = user.get("inventory", [])
-    efecto = None
-    mensaje = ""
-
-    especiales = [nombre for nombre in OBJETOS_ESPECIALES if nombre in inventario]
-    if not especiales:
-        return None, ""
-
-    objeto_usado = random.choice(especiales)
-
-    # Elixir de la Bruma: solo se elimina si pierde
-    if objeto_usado == "Elixir de la Bruma 🏺" and dado_user < dado_oponente:
-        inventario.remove(objeto_usado)
-        await database.update_user(ctx.author.id, {"inventory": inventario})
-        efecto = "elixir_bruma"
-        mensaje = obtener_dialogo("duelo_objeto_elixir_bruma", user=ctx.author.mention)
-    # Hongo del Abismo: solo se elimina si pierde
-    elif objeto_usado == "Hongo del Abismo 🍄" and dado_user < dado_oponente:
-        inventario.remove(objeto_usado)
-        await database.update_user(ctx.author.id, {"inventory": inventario})
-        efecto = "hongo_abismo"
-        mensaje = obtener_dialogo("duelo_objeto_hongo_abismo", user=ctx.author.mention, enemigo=oponente_member.mention)
-    # Pizza con yogur: solo se elimina si gana
-    elif objeto_usado == "Pizza con yogur 🍕" and dado_user > dado_oponente:
-        inventario.remove(objeto_usado)
-        await database.update_user(ctx.author.id, {"inventory": inventario})
-        efecto = "pizza_yogur"
-        mensaje = obtener_dialogo("duelo_objeto_pizza_yogur", user=ctx.author.mention)
-    return efecto, mensaje
 
 bot.run(DISCORD_TOKEN)
