@@ -38,6 +38,11 @@ class Database:
         result = await self.collection.delete_one({"user_id": user_id})
         return result.deleted_count
 
+    async def get_all_users(self):
+        cursor = self.collection.find({})
+        usuarios = await cursor.to_list(length=None)
+        return usuarios
+
 db_instance = Database()
 
 def get_database():

@@ -53,6 +53,7 @@ async def info(ctx):
         f"`!cambiar_clase <letra>` - Cambia tu clase por un precio.\n"
         "`!tienda` - Muestra los objetos que puedes comprar al mercader.\n"
         "`!comprar <número>` - Compra un objeto de la tienda para tu inventario.\n"
+        "`!rank` - Muestra el top 5 de los jugadores con más monedas.\n"
         "\n"
         "**Reglas y mecánicas:**\n"
         f"- Cambiar de raza o clase cuesta {PRECIO_CAMBIO} monedas.\n"
@@ -454,5 +455,46 @@ async def comprar_objeto(ctx, numero: int):
     await ctx.send(
         obtener_dialogo("compra_exito", user=ctx.author.mention, objeto=f"{objeto['emoji']} {objeto['nombre']}")
     )
+
+@bot.command(name="rank")
+async def rank(ctx, top: int = 3):
+    # Obtén todos los usuarios de la base de datos
+    usuarios = await database.get_all_users()  # Debes implementar este método si no existe
+    if not usuarios:
+        await ctx.send("No hay usuarios registrados aún.")
+        return
+
+    # Ordena por monedas descendente
+    usuarios.sort(key=lambda u: u.get("coins", 0), reverse=True)
+
+    # Agrupa usuarios por cantidad de monedas
+    ranking = []
+    last_coins = None
+    current_group = []
+    for user in usuarios:
+        coins = user.get("coins", 0)
+        if coins != last_coins:
+            if current_group:
+                ranking.append((last_coins, current_group))
+            current_group = [user]
+            last_coins = coins
+        else:
+            current_group.append(user)
+    if current_group:
+        ranking.append((last_coins, current_group))
+
+    emojis = ["🥇", "🥈", "🥉"]
+
+    # Muestra solo los primeros 'top' puestos
+    mensaje = "**El Panteón de la Opulencia:**\n\n"
+    puesto = 1
+    for idx, (coins, group) in enumerate(ranking[:top], 1):
+        nombres = ", ".join(u.get("username", "Desconocido") for u in group)
+        if idx <= 3:
+            mensaje += f"{emojis[idx - 1]} {nombres} — **§{coins}** monedas\n"
+        else:
+            mensaje += f"{idx}. {nombres} — **§{coins}** monedas\n"
+
+    await ctx.send(mensaje)
 
 bot.run(DISCORD_TOKEN)
