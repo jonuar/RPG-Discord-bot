@@ -340,7 +340,7 @@ async def duelo(ctx, oponente: discord.Member):
             await ctx.send(resultado)
             return
         else:
-            # Lógica normal
+            # Lógica normal de duelo
             await database.update_user(ctx.author.id, {"coins": retador["coins"] - 100})
             await database.update_user(oponente.id, {"coins": rival["coins"] + 100})
             nuevo_saldo = retador["coins"] - 100
@@ -351,14 +351,14 @@ async def duelo(ctx, oponente: discord.Member):
                 resultado += (
                     f"\n{ctx.author.mention}, tus arcas se vaciaron en un suspiro, y tu nombre fue borrado de los pergaminos del tiempo.\n"
                     "Deberá crear un nuevo perfil con `!elegir <número de raza><letra de clase>`."
-                )
-                return
+                ) 
             else:
                 resultado += (
                     f"¡{oponente.mention} se alza victorioso y roba §100 monedas! "
                     f"{ctx.author.mention}, quizás la suerte te sonría en tu próxima vida... o no."
                 )
             await ctx.send(resultado)
+            return
     else:
         # Empate
         resultado += (
