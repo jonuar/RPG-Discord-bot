@@ -128,7 +128,7 @@ async def elegir(ctx, opcion: str):
     img_clase = redimensionar_por_alto(obtener_imagen_clase(clase), alto=IMAGE_HEIGHT)
     img_combinada = combinar_imagenes_misma_altura(img_raza, img_clase, alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(img_combinada))
-    
+
     username = ctx.author.name
     await database.create_user(ctx.author.id, username=username, race=raza, user_class=clase)
     await ctx.send(
@@ -249,27 +249,6 @@ async def duelo(ctx, oponente: discord.Member):
 
     retador = await database.read_user(ctx.author.id)
     rival = await database.read_user(oponente.id)
-    #     import re
-    
-    @bot.command(name="elegir")
-    async def elegir(ctx, opcion: str):
-        user = await database.read_user(ctx.author.id)
-        if user:
-            await ctx.send("Ya tienes un perfil. Si quieres cambiar de raza o clase, usa `!cambiar_raza` o `!cambiar_clase`.")
-            return
-    
-        match = re.match(r"^(\d+)([A-Za-z])$", opcion)
-        if not match:
-            await ctx.send(
-                "Formato incorrecto. Usa `!elegir <número de raza><letra de clase>`, por ejemplo: `!elegir 10H`.\n"
-                "Consulta las razas con `!razas` y las clases con `!clases`."
-            )
-            return
-    
-        raza_num = int(match.group(1))
-        clase_letra = match.group(2).upper()
-    
-        # ...continúa con la lógica de creación de perfil usando raza_num y clase_letra...
 
     if not retador:
         await ctx.send(
@@ -310,7 +289,7 @@ async def duelo(ctx, oponente: discord.Member):
             "Sin oro, solo les queda pelear por migajas... o por su dignidad."
         )
         return
-    
+
     raza_retador = retador.get("race")
     raza_oponente = rival.get("race")
 
@@ -321,7 +300,7 @@ async def duelo(ctx, oponente: discord.Member):
 
     ruta_combinada = combinar_tres_horizontal(img_retador, img_versus, img_oponente, alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(ruta_combinada))
-    
+
 
     dado_jugador = random.randint(1, 20)
     dado_rival = random.randint(1, 20)
@@ -388,7 +367,7 @@ async def duelo(ctx, oponente: discord.Member):
                 resultado += (
                     f"\n{ctx.author.mention}, tus arcas se vaciaron en un suspiro, y tu nombre fue borrado de los pergaminos del tiempo.\n"
                     "Deberá crear un nuevo perfil con `!elegir <número de raza><letra de clase>`."
-                ) 
+                )
             else:
                 resultado += (
                     f"¡{oponente.mention} se alza victorioso y roba §100 monedas! "
@@ -410,7 +389,42 @@ async def duelo_error(ctx, error):
     if isinstance(error, MemberNotFound):
         await ctx.send("¡Intentaste batirte en duelo con un fantasma! Ese usuario no existe en este servidor o no lo mencionaste correctamente. Usa `!duelo @usuario`.")
     else:
+        print(error)
         await ctx.send("Algo salió mal en el duelo. Los dioses del código están confundidos.")
+
+
+# Uso de objetos en duelo
+async def aplicar_objeto_duelo(ctx, user, oponente_db, dado_user, dado_oponente, oponente_member):
+    inventario = user.get("inventory", [])
+    efecto = None
+    mensaje = ""
+
+    especiales = [nombre for nombre in OBJETOS_ESPECIALES if nombre in inventario]
+    if not especiales:
+        return None, ""
+
+    objeto_usado = random.choice(especiales)
+
+    # Elixir de la Bruma: solo se elimina si pierde
+    if objeto_usado == "Elixir de la Bruma" and dado_user < dado_oponente:
+        inventario.remove(objeto_usado)
+        await database.update_user(ctx.author.id, {"inventory": inventario})
+        efecto = "elixir_bruma"
+        mensaje = obtener_dialogo("duelo_objeto_elixir_bruma", user=ctx.author.mention)
+    # Hongo del Abismo: solo se elimina si pierde
+    elif objeto_usado == "Hongo del Abismo" and dado_user < dado_oponente:
+        inventario.remove(objeto_usado)
+        await database.update_user(ctx.author.id, {"inventory": inventario})
+        efecto = "hongo_abismo"
+        mensaje = obtener_dialogo("duelo_objeto_hongo_abismo", user=ctx.author.mention, enemigo=oponente_member.mention)
+    # Pizza con yogur: solo se elimina si gana
+    elif objeto_usado == "Pizza con yogur" and dado_user > dado_oponente:
+        inventario.remove(objeto_usado)
+        await database.update_user(ctx.author.id, {"inventory": inventario})
+        efecto = "pizza_yogur"
+        mensaje = obtener_dialogo("duelo_objeto_pizza_yogur", user=ctx.author.mention)
+    return efecto, mensaje
+
 
 @bot.command(name="tienda")
 async def mostrar_tienda(ctx):
