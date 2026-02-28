@@ -326,16 +326,27 @@ async def duelo(ctx, oponente: discord.Member):
             ganancia = 100 * 3
             saldo_final = saldo_previo + ganancia
             await database.update_user(ctx.author.id, {"coins": saldo_final})
-            await database.update_user(oponente.id, {"coins": rival["coins"] - 100})
+            nuevo_saldo_oponente = rival["coins"] - 100
+            await database.update_user(oponente.id, {"coins": nuevo_saldo_oponente})
         else:
             ganancia = 100
             saldo_final = saldo_previo + ganancia
             await database.update_user(ctx.author.id, {"coins": saldo_final})
-            await database.update_user(oponente.id, {"coins": rival["coins"] - ganancia})
+            nuevo_saldo_oponente = rival["coins"] - ganancia
+            await database.update_user(oponente.id, {"coins":  nuevo_saldo_oponente})
         # Construye y envía el mensaje de resultado (incluyendo mensaje_objeto si aplica)
         resultado += (
-            f"¡{ctx.author.mention} aplasta a su rival y saquea §{ganancia} monedas de su bolsa! {oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido."
+            f"¡{ctx.author.mention} aplasta a su rival y saquea §{ganancia} monedas de su bolsa! {oponente.mention}, siempre puedes vender tu dignidad para recuperar el oro perdido.\n"
         )
+        rival_actualizado = await database.read_user(oponente.id)
+        if rival_actualizado and rival_actualizado.get("coins", 0) <= 0:
+            await database.delete_user(oponente.id)
+            resultado += (
+                f"\n{oponente.mention}, tus arcas se vaciaron en un suspiro, y tu nombre fue borrado de los pergaminos del tiempo.\n"
+                "Deberás crear un nuevo perfil con `!elegir <número de raza><letra de clase>`."
+    )
+
+
         await ctx.send(resultado)
         return
     elif dado_rival > dado_jugador:
@@ -351,7 +362,7 @@ async def duelo(ctx, oponente: discord.Member):
             coins_oponente = max(1, rival["coins"] - 100)
             # El retador pierde monedas normalmente
             await database.update_user(ctx.author.id, {"coins": coins_jugador})
-            # El oponente pierde 100 monedas extra (pero no menos de 1)
+            # El oponente pierde 100 monedas extra (pero if dado_jugador > enos de 1)
             await database.update_user(oponente.id, {"coins": coins_oponente})
             await ctx.send(resultado)
             return
