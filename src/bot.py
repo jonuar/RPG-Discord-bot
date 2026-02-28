@@ -12,6 +12,7 @@ import re
 TO DO:
 -Short decription: classes/races
 -Error Handling
+-Dev/prod env
 -Testing
 '''
 
@@ -21,15 +22,42 @@ intents = discord.Intents.default()
 intents.message_content = True
 bot = commands.Bot(command_prefix="!", intents=intents)
 
+database = get_database()
+
+# RACES = [
+#     "Humano", "Elfo", "Orco", "Enano", "Gnomo", "Goblin", "Trol", "Dracónido", "Tiefling", "Mediano"
+# ]
 
 RACES = [
-    "Humano", "Elfo", "Orco", "Enano", "Gnomo", "Goblin", "Trol", "Dracónido", "Tiefling", "Mediano"
-]
-CLASSES = [
-    "Guerrero", "Mago", "Druida", "Ladrón", "Paladín", "Bárbaro", "Clérigo", "Hechicero", "Monje", "Explorador"
+    {"nombre": "Humano", "descripcion": "Maestro en sobrevivir a lunes y dragones."},
+    {"nombre": "Elfo", "descripcion": "Orejas largas, paciencia corta."},
+    {"nombre": "Orco", "descripcion": "Fuerza bruta, sutileza opcional."},
+    {"nombre": "Enano", "descripcion": "Barba épica, altura económica."},
+    {"nombre": "Gnomo", "descripcion": "Pequeño tamaño, grandes travesuras."},
+    {"nombre": "Goblin", "descripcion": "Pequeño, verde y siempre tramando algo."},
+    {"nombre": "Trol", "descripcion": "Grande, fuerte y no muy fan del jabón."},
+    {"nombre": "Dracónido", "descripcion": "Aliento de dragón, aliento matutino."},
+    {"nombre": "Tiefling", "descripcion": "Cuernos grandes, secretos más grandes."},
+    {"nombre": "Mediano", "descripcion": "Nunca rechaza una segunda cena."}
 ]
 
-database = get_database()
+# CLASSES = [
+#     "Guerrero", "Mago", "Druida", "Ladrón", "Paladín", "Bárbaro", "Clérigo", "Hechicero", "Monje", "Explorador"
+# ]
+
+CLASSES = [
+    {"letra": "A", "nombre": "Guerrero", "descripcion": "Resuelve todo a golpes, incluso los acertijos."},
+    {"letra": "B", "nombre": "Mago", "descripcion": "Hace magia... y desaparecer su dinero."},
+    {"letra": "C", "nombre": "Druida", "descripcion": "Habla con plantas. Las plantas no responden."},
+    {"letra": "D", "nombre": "Ladrón", "descripcion": "Tu bolsa no está segura cerca de él."},
+    {"letra": "E", "nombre": "Paladín", "descripcion": "Justicia en armadura... y a veces en exceso."},
+    {"letra": "F", "nombre": "Bárbaro", "descripcion": "Grita primero, pregunta después."},
+    {"letra": "G", "nombre": "Clérigo", "descripcion": "Reza por ti... y por su suerte en los dados."},
+    {"letra": "H", "nombre": "Hechicero", "descripcion": "Poder innato, excusas infinitas."},
+    {"letra": "I", "nombre": "Monje", "descripcion": "Golpea rápido, medita lento."},
+    {"letra": "J", "nombre": "Explorador", "descripcion": "Siempre perdido, pero con estilo."}
+]
+
 
 OBJETOS_TIENDA = [
     {"nombre": "Elixir de la Bruma", "emoji": "🏺", "precio": 200, "descripcion": "Mejora tu suerte en el duelo: si pierdes, tu fortuna no disminuye."},
@@ -70,20 +98,28 @@ async def info(ctx):
 
 @bot.command(name="razas")
 async def listar_razas(ctx):
-    razas_text = "\n".join([f"{i+1}. {raza}" for i, raza in enumerate(RACES)])
-    await ctx.send(
-        f"En el gran libro de los condenados, las razas disponibles son:\n\n{razas_text}\n"
-        "\nElige sabiamente... o no, igual el destino te alcanzará."
-    )
+    # razas_text = "\n".join([f"{i+1}. {raza}" for i, raza in enumerate(RACES)])
+    # await ctx.send(
+    #     f"Las razas disponibles son:\n\n{razas_text}\n"
+    #     "\nElige sabiamente... o no, igual el destino te alcanzará."
+    # )
+    mensaje = "**Las razas disponibles son:**\n\n"
+    for i, raza in enumerate(RACES, 1):
+        mensaje += f"{i}. **{raza['nombre']}** — {raza['descripcion']}\n"
+    await ctx.send(mensaje)
 
 @bot.command(name="clases")
 async def listar_clases(ctx):
-    letras = "ABCDEFGHIJ"
-    clases_text = "\n".join([f"{letras[i]}. {clase}" for i, clase in enumerate(CLASSES)])
-    await ctx.send(
-        f"Las sendas del infortunio te ofrecen estas clases:\n\n{clases_text}\n"
-        "\nRecuerda: ningún mago ha muerto de viejo, y ningún bárbaro ha muerto de sabio."
-    )
+    # letras = "ABCDEFGHIJ"
+    # clases_text = "\n".join([f"{letras[i]}. {clase}" for i, clase in enumerate(CLASSES)])
+    # await ctx.send(
+    #     f"Las sendas del infortunio te ofrecen estas clases:\n\n{clases_text}\n"
+    #     "\nRecuerda: ningún mago ha muerto de viejo, y ningún bárbaro ha muerto de sabio."
+    # )
+    mensaje = "**Las sendas del infortunio te ofrecen estas clases:**\n\n"
+    for clase in CLASSES:
+        mensaje += f"{clase['letra']}. **{clase['nombre']}** — {clase['descripcion']}\n"
+    await ctx.send(mensaje)
 
 @bot.command(name="elegir")
 async def elegir(ctx, opcion: str):
@@ -124,8 +160,8 @@ async def elegir(ctx, opcion: str):
     clase = CLASSES[clase_idx]
     raza = RACES[raza_idx]
 
-    img_raza = redimensionar_por_alto(obtener_imagen_raza(raza), alto=IMAGE_HEIGHT)
-    img_clase = redimensionar_por_alto(obtener_imagen_clase(clase), alto=IMAGE_HEIGHT)
+    img_raza = redimensionar_por_alto(obtener_imagen_raza(raza["nombre"]), alto=IMAGE_HEIGHT)
+    img_clase = redimensionar_por_alto(obtener_imagen_clase(clase["nombre"]), alto=IMAGE_HEIGHT)
     img_combinada = combinar_imagenes_misma_altura(img_raza, img_clase, alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(img_combinada))
 
@@ -161,8 +197,8 @@ async def cambiar_raza(ctx, numero: int):
         await ctx.send(obtener_dialogo("cambiar_raza_muerte", user=ctx.author.mention))
     else:
         await database.update_user(ctx.author.id, {"race": raza, "coins": new_coins})
-        await ctx.send(obtener_dialogo("cambiar_raza_exito", user=ctx.author.mention, raza=raza, coins=new_coins))
-        imagen_raza = redimensionar_por_alto(obtener_imagen_raza(raza), alto=IMAGE_HEIGHT)
+        await ctx.send(obtener_dialogo("cambiar_raza_exito", user=ctx.author.mention, raza=raza["nombre"], coins=new_coins))
+        imagen_raza = redimensionar_por_alto(obtener_imagen_raza(raza["nombre"]), alto=IMAGE_HEIGHT)
         await ctx.send(file=discord.File(imagen_raza))
 
 @bot.command(name="cambiar_clase")
@@ -190,8 +226,8 @@ async def cambiar_clase(ctx, letra: str):
         await ctx.send(obtener_dialogo("cambiar_clase_muerte", user=ctx.author.mention))
     else:
         await database.update_user(ctx.author.id, {"class": clase, "coins": new_coins})
-        await ctx.send(obtener_dialogo("cambiar_clase_exito", user=ctx.author.mention, clase=clase, coins=new_coins))
-        imagen_clase = redimensionar_por_alto(obtener_imagen_clase(clase), alto=IMAGE_HEIGHT)
+        await ctx.send(obtener_dialogo("cambiar_clase_exito", user=ctx.author.mention, clase=clase["nombre"], coins=new_coins))
+        imagen_clase = redimensionar_por_alto(obtener_imagen_clase(clase["nombre"]), alto=IMAGE_HEIGHT)
         await ctx.send(file=discord.File(imagen_clase))
 
 @bot.command(name="perfil")
@@ -211,6 +247,10 @@ async def perfil(ctx):
     clase = user.get("class", "No elegida")
     coins = user.get("coins", 0)
     inventory = user.get("inventory", [])
+
+    if isinstance(clase, str):
+        clase = next((c for c in CLASSES if c["nombre"] == clase), {"nombre": clase})
+
     # Añade emojis al inventario y muestra cada objeto en una línea
     if inventory:
         inventario_str = "\n" + "\n".join(
@@ -221,14 +261,14 @@ async def perfil(ctx):
         inventario_str = obtener_dialogo(
             "perfil_inventario_vacio",
             user=ctx.author.mention,
-            raza=raza,
-            clase=clase,
+            raza=raza["nombre"],
+            clase=clase["nombre"],
             coins=coins
         )
 
     # Imágenes raza y clase
-    imagen_raza = obtener_imagen_raza(raza)
-    imagen_clase = obtener_imagen_clase(clase)
+    imagen_raza = obtener_imagen_raza(raza["nombre"])
+    imagen_clase = obtener_imagen_clase(clase["nombre"])
     ruta_combinada = combinar_imagenes_misma_altura(imagen_raza, imagen_clase, alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(ruta_combinada))
 

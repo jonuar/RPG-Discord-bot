@@ -60,9 +60,9 @@ DIALOGOS = {
         "Sin monedas, sin alma, sin futuro.\n{muerto} debe empezar de nuevo si quiere volver a sufrir."
     ],
     "perfil_vacio": [
-        "Tu existencia es tan vacía como tu perfil.\nUsa `!elegir <número de raza><letra de clase>` para comenzar tu trágica aventura.",
-        "No tienes historia, no tienes gloria.\nUsa `!elegir <número de raza><letra de clase>` y acepta tu destino.",
-        "Eres un alma errante sin propósito.\nCrea tu perfil con `!elegir <número de raza><letra de clase>` y abraza el sufrimiento."
+        "{user}, tu existencia es tan vacía como tu perfil.\nUsa `!elegir <número de raza><letra de clase>` para comenzar tu trágica aventura.",
+        "{user}, no tienes historia, no tienes gloria.\nUsa `!elegir <número de raza><letra de clase>` y acepta tu destino.",
+        "Eres un alma errante sin propósito, {user},.\nCrea tu perfil con `!elegir <número de raza><letra de clase>` y abraza el sufrimiento."
     ],
     "perfil": [
         "{user}, eres un **{raza}** y formas parte del gremio **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas\nInventario: {inventario}.",
@@ -70,9 +70,9 @@ DIALOGOS = {
         "{user}, como buen **{raza}** del gremio **{clase}**, llevas **§{coins}** monedas en la bolsa.\nInventario: {inventario}."
     ],
     "perfil_inventario_vacio": [
-        "Eres un **{raza}** del gremio **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas,\npero tu inventario está tan vacío como tus esperanzas.",
+        "{user}, eres un **{raza}** del gremio **{clase}**.\nEn tu bolsa guardas **§{coins}** monedas,\npero tu inventario está tan vacío como tus esperanzas.",
         "{user}, tu linaje es **{raza}** y perteneces al gremio **{clase}**.\nTus riquezas suman **§{coins}** monedas,\npero tu inventario no tiene nada digno de mencionar.",
-        "Como buen **{raza}** del gremio **{clase}**, llevas **§{coins}** monedas en la bolsa,\ny un inventario tan vacío que hasta los ladrones lo ignoran."
+        "{user}, como buen **{raza}** del gremio **{clase}**, llevas **§{coins}** monedas en la bolsa,\ny un inventario tan vacío que hasta los ladrones lo ignoran."
     ],
     "elegir_exito": [
         "{user}, los dioses se ríen mientras eliges:\nRaza: **{raza}**\nClase: **{clase}**\nTu destino está sellado... por ahora.",
