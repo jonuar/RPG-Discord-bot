@@ -169,7 +169,7 @@ async def elegir(ctx, opcion: str):
     await database.create_user(ctx.author.id, username=username, race=raza, user_class=clase)
     await ctx.send(
         f"{ctx.author.mention}, los dioses te vigilan mientras eliges:\n"
-        f"Raza: **{raza}**\nClase: **{clase}**\n"
+        f"Raza: **{raza['nombre']}**\nClase: **{clase['nombre']}**\n"
         f"Se te ha otorgado un tributo celestial por **§1000** monedas\n"
         "Tu destino está sellado... por ahora."
     )
@@ -234,7 +234,7 @@ async def cambiar_clase(ctx, letra: str):
 async def perfil(ctx):
     user = await database.read_user(ctx.author.id)
     if not user:
-        await ctx.send(obtener_dialogo("perfil_vacio"))
+        await ctx.send(obtener_dialogo("perfil_vacio", user=ctx.author.mention))
         return
     if user.get("coins", 0) <= 0:
         await database.delete_user(ctx.author.id)
@@ -334,9 +334,9 @@ async def duelo(ctx, oponente: discord.Member):
     raza_oponente = rival.get("race")
 
     # Imágenes duelo
-    img_retador = redimensionar_por_alto(obtener_imagen_raza(raza_retador), alto=IMAGE_HEIGHT)
+    img_retador = redimensionar_por_alto(obtener_imagen_raza(raza_retador["nombre"]), alto=IMAGE_HEIGHT)
     img_versus = redimensionar_por_alto("assets/duelo_versus.png", alto=IMAGE_HEIGHT)
-    img_oponente = redimensionar_por_alto(obtener_imagen_raza(raza_oponente), alto=IMAGE_HEIGHT)
+    img_oponente = redimensionar_por_alto(obtener_imagen_raza(raza_oponente["nombre"]), alto=IMAGE_HEIGHT)
 
     ruta_combinada = combinar_tres_horizontal(img_retador, img_versus, img_oponente, alto=IMAGE_HEIGHT)
     await ctx.send(file=discord.File(ruta_combinada))
